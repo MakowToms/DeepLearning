@@ -3,11 +3,11 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-from neuralnet.Budget import Budget
-from neuralnet.Losses import MSE
-from neuralnet.Optimizers import no_optimizer
-from neuralnet.Regularizations import no_regularization
-from neuralnet.Weights import zero_init
+from neural_net.budget import Budget
+from neural_net.losses import MSE
+from neural_net.optimizers import no_optimizer
+from neural_net.regularizations import no_regularization
+from neural_net.weights import zero_init
 
 
 def split(data, batch_size):
