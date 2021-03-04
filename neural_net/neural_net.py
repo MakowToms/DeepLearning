@@ -143,12 +143,7 @@ class NeuralNet:
     def get_loss_on_data(self, data, y):
         self.predict(data)
         loss = self.get_loss(y)
-        # check if any dimension returns NaN
-        if any(map(math.isnan, loss)):
-            loss = math.nan
-        else:
-            loss = loss.sum()
-        return loss
+        return loss.sum()
 
     def train(self, data, y, learning_rate=0.001, batch_size=10, verbose=True):
         """Calls backpropagation algorithm with MSE loss function to fit weights."""
@@ -187,6 +182,7 @@ class NeuralNet:
         self.layers[0].set_data(data)
         for layer in self.layers[1:]:
             layer.__predict__()
+        return np.transpose(self.get_result())
 
     def plot_prediction(self, x, y):
         """Works for 1D data, that is - one x column and one y column."""
@@ -202,4 +198,4 @@ class NeuralNet:
     def __shuffle__(data, y):
         s = np.arange(data.shape[1])
         np.random.shuffle(s)
-        return data.iloc[:, s], y.iloc[:, s]
+        return data[:, s], y[:, s]
