@@ -24,8 +24,7 @@ MAE = Loss(
     lambda y_hat, y: np.sign(y_hat - y)
 )
 hinge = Loss(
-    # np.sign(y - 0.5) is used so that for y=0 it returns -1, while for y=1 it returns 1
-    lambda y_hat, y: np.maximum(np.transpose(-(y_hat - y) * np.sign(y - 0.5)), 0),
+    lambda y_hat, y: np.transpose(np.maximum(np.equal(y, 0) * (y_hat - y), 0) - np.maximum(np.equal(y, 1) * (y_hat - y), 0)),
     lambda y_hat, y: np.array(np.equal(y, 0) * np.greater(y_hat, 0), dtype=np.int32) - np.equal(y, 1) * np.less(y_hat, 1)
 )
 
