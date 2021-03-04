@@ -84,7 +84,9 @@ class Layer:
 
 
 class NeuralNet:
-    def __init__(self, size, weight_init=zero_init):
+    def __init__(self, size, weight_init=zero_init, seed=None):
+        if seed:
+            np.random.seed(seed)
         self.layers = [InputLayer(size)]
         self.loss = MSE
         self.regularization = no_regularization
