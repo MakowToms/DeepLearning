@@ -84,9 +84,7 @@ class Layer:
 
 
 class NeuralNet:
-    def __init__(self, size, weight_init=zero_init, seed=None):
-        if seed:
-            np.random.seed(seed)
+    def __init__(self, size, weight_init=zero_init):
         self.layers = [InputLayer(size)]
         self.loss = MSE
         self.regularization = no_regularization
@@ -193,3 +191,9 @@ class NeuralNet:
         plt.ylabel("y")
         plt.legend()
         plt.title("Prediction comparison")
+
+    @staticmethod
+    def __shuffle__(data, y):
+        s = np.arange(data.shape[0])
+        np.random.shuffle(s)
+        return data[s], y[s]
