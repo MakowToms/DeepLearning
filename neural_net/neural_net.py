@@ -1,5 +1,7 @@
 import math
+import os
 
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -7,7 +9,11 @@ from neural_net.budget import Budget
 from neural_net.losses import MSE
 from neural_net.optimizers import no_optimizer
 from neural_net.regularizations import no_regularization
+from neural_net.weight_plotter import plot_weights
 from neural_net.weights import zero_init
+
+# Taken from https://stackoverflow.com/questions/15713279/calling-pylab-savefig-without-display-in-ipython#15713545
+matplotlib.use('Agg')
 
 
 def split(data, batch_size):
@@ -179,6 +185,9 @@ class NeuralNet:
                     print("Batch {0}/{1}".format(index + 1, math.ceil(y.shape[1] / batch_size)), end="\r")
 
             self.save_metrics(data, y, x_test, y_test, verbose)
+            if not os.path.exists("plots"):
+                os.mkdir("plots")
+            plot_weights(self, "plots/NeuralNet_{0}.png".format(self.budget.epoch))
             self.budget.epoch += 1
 
     def predict(self, data):
