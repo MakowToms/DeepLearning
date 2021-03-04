@@ -143,6 +143,11 @@ class NeuralNet:
 
     def train(self, data, y, learning_rate=0.001, batch_size=10, verbose=True):
         """Calls backpropagation algorithm with MSE loss function to fit weights."""
+
+        # data and y have now each observation as column
+        data = np.transpose(data)
+        y = np.transpose(y)
+
         # initialize some variables (loss_history with inf because of finding minimum later)
         self.loss_history = []
         # initial prediction
@@ -156,6 +161,7 @@ class NeuralNet:
         while not self.budget.finished(self.loss_history):
             print("Epoch: {}".format(self.budget.epoch + 1))
             # split data into batches
+            data, y = self.__shuffle__(data, y)
             batches = zip(split(data, batch_size), split(y, batch_size))
             for index, batch in enumerate(batches):
                 # make prediction for given batch
@@ -196,6 +202,6 @@ class NeuralNet:
 
     @staticmethod
     def __shuffle__(data, y):
-        s = np.arange(data.shape[0])
+        s = np.arange(data.shape[1])
         np.random.shuffle(s)
-        return data[s], y[s]
+        return data[:, s], y[:, s]
