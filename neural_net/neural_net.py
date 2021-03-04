@@ -146,7 +146,7 @@ class NeuralNet:
         return loss.sum()
 
     def train(self, data, y, learning_rate=0.001, batch_size=10, verbose=True):
-        """Calls backpropagation algorithm with MSE loss function to fit weights."""
+        """Calls backpropagation algorithm with given loss function to fit weights."""
 
         # data and y have now each observation as column
         data = np.transpose(data)

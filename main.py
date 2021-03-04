@@ -32,8 +32,8 @@ nn = NeuralNet(2, uniform_init)\
     .add_layer(Layer(10, sigmoid))\
     .add_layer(Layer(15, sigmoid))\
     .add_layer(Layer(10, sigmoid))\
-    .add_layer(Layer(2, linear))\
+    .add_layer(Layer(2, sigmoid))\
     .set_optimizer(momentum.set_params({"coef": 0.05}))\
     .set_loss(hinge)
-nn.budget.set_epoch_limit(10).set_detection_limit(1.3)
+nn.budget.set_epoch_limit(50).set_detection_limit(1.3)
 nn.train(x_train, y_train, learning_rate=0.02, batch_size=8)
