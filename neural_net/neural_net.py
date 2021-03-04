@@ -140,20 +140,30 @@ class NeuralNet:
             weight_loss += self.regularization.compute_loss(layer)
         return self.loss.compute_loss(self.get_result(), y) + weight_loss
 
-    def get_loss_on_data(self, data, y):
-        self.predict(data)
-        loss = self.get_loss(y)
-        return loss.sum()
+    def save_metrics(self, data, y, x_test, y_test, verbose):
+        self.predict(x_test)
+        loss = self.get_loss(y_test)
+        self.loss_history.append(loss)
+        if verbose:
+            print("Loss: {}".format(self.get_loss(y_test)))
+            print("==========================")
 
-    def train(self, data, y, learning_rate=0.001, batch_size=10, verbose=True):
+        self.MSE_test.append(MSE.compute_loss(self.predict(x_test), np.transpose(y_test)))
+        self.MSE_train.append(MSE.compute_loss(self.predict(data), np.transpose(y)))
+
+    def train(self, data, y, x_test, y_test, learning_rate=0.001, batch_size=10, verbose=True):
         """Calls backpropagation algorithm with given loss function to fit weights."""
 
         # data and y have now each observation as column
         data = np.transpose(data)
         y = np.transpose(y)
+        x_test = np.transpose(x_test)
+        y_test = np.transpose(y_test)
 
         # initialize some variables (loss_history with inf because of finding minimum later)
         self.loss_history = []
+        self.MSE_train = []
+        self.MSE_test = []
 
         while not self.budget.finished(self.loss_history):
             print("Epoch: {}".format(self.budget.epoch + 1))
@@ -168,13 +178,7 @@ class NeuralNet:
                 if verbose:
                     print("Batch {0}/{1}".format(index + 1, math.ceil(y.shape[1] / batch_size)), end="\r")
 
-            loss = self.get_loss_on_data(data, y)
-            if verbose:
-                print("Loss: {}".format(loss))
-                print("==========================")
-
-            # save final loss for given epoch
-            self.loss_history.append(loss)
+            self.save_metrics(data, y, x_test, y_test, verbose)
             self.budget.epoch += 1
 
     def predict(self, data):
