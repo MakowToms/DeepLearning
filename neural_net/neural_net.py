@@ -166,7 +166,7 @@ class NeuralNet:
                 # run backpropagation with given batch
                 self.__backpropagate__(batch[1], learning_rate)
                 if verbose:
-                    print("Batch {0}/{1}".format(index + 1, math.ceil(y.shape[1] / batch_size)))
+                    print("Batch {0}/{1}".format(index + 1, math.ceil(y.shape[1] / batch_size)), end="\r")
 
             loss = self.get_loss_on_data(data, y)
             if verbose:
