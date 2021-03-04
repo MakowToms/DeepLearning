@@ -204,4 +204,4 @@ class NeuralNet:
     def __shuffle__(data, y):
         s = np.arange(data.shape[1])
         np.random.shuffle(s)
-        return data[:, s], y[:, s]
+        return data.iloc[:, s], y.iloc[:, s]
