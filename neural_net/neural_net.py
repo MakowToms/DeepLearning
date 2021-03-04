@@ -140,6 +140,16 @@ class NeuralNet:
             weight_loss += self.regularization.compute_loss(layer)
         return self.loss.compute_loss(self.get_result(), y) + weight_loss
 
+    def get_loss_on_data(self, data, y):
+        self.predict(data)
+        loss = self.get_loss(y)
+        # check if any dimension returns NaN
+        if any(map(math.isnan, loss)):
+            loss = math.nan
+        else:
+            loss = loss.sum()
+        return loss
+
     def train(self, data, y, learning_rate=0.001, batch_size=10, verbose=True):
         """Calls backpropagation algorithm with MSE loss function to fit weights."""
 
@@ -149,14 +159,7 @@ class NeuralNet:
 
         # initialize some variables (loss_history with inf because of finding minimum later)
         self.loss_history = []
-        # initial prediction
-        self.predict(data)
-        loss = self.get_loss(y)
-        # check if any dimension returns NaN
-        if any(map(math.isnan, loss)):
-            loss = math.nan
-        else:
-            loss = loss.sum()
+
         while not self.budget.finished(self.loss_history):
             print("Epoch: {}".format(self.budget.epoch + 1))
             # split data into batches
@@ -167,18 +170,14 @@ class NeuralNet:
                 self.predict(batch[0])
                 # run backpropagation with given batch
                 self.__backpropagate__(batch[1], learning_rate)
-                # compute loss for whole dataset
-                self.predict(data)
-                loss = self.get_loss(y)
-                # check if any dimension returns NaN
-                if any(map(math.isnan, loss)):
-                    loss = math.nan
-                else:
-                    loss = loss.sum()
                 if verbose:
                     print("Batch {0}/{1}".format(index + 1, math.ceil(y.shape[1] / batch_size)))
-                    print("Loss: {}".format(loss))
-            print("==========================")
+
+            loss = self.get_loss_on_data(data, y)
+            if verbose:
+                print("Loss: {}".format(loss))
+                print("==========================")
+
             # save final loss for given epoch
             self.loss_history.append(loss)
             self.budget.epoch += 1
