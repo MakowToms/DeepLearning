@@ -1,7 +1,7 @@
-import numpy as np
 import pandas
 
 from neural_net.activations import sigmoid, linear
+from neural_net.losses import MAE
 from neural_net.neural_net import NeuralNet, Layer
 from neural_net.optimizers import momentum
 from neural_net.regularizations import L1_regularization
@@ -17,6 +17,7 @@ nn = NeuralNet(1, uniform_init)\
     .add_layer(Layer(10, sigmoid))\
     .add_layer(Layer(1, linear))\
     .set_optimizer(momentum.set_params({"coef": 0.05}))\
-    .set_regularization(L1_regularization.set_params({"coef": 0.05}))
-nn.budget.set_epoch_limit(50).set_detection_limit(1.3)
-nn.train(x_train, y_train, learning_rate=0.02, batch_size=16)
+    .set_regularization(L1_regularization.set_params({"coef": 0.05}))\
+    .set_loss(MAE)
+nn.budget.set_epoch_limit(10).set_detection_limit(1.3)
+nn.train(x_train, y_train, learning_rate=0.02, batch_size=32)

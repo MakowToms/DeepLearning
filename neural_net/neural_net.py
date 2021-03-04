@@ -96,7 +96,7 @@ class NeuralNet:
 
     def __backpropagate__(self, y, learning_rate=0.001):
         # compute weight and bias changes for every layer starting with the last
-        self.layers[-1].__backpropagate__(self.get_result() - y)
+        self.layers[-1].__backpropagate__(self.loss.compute_derivative(self.get_result(), y))
         for layer, next_layer in zip(reversed(self.layers[1:-1]), reversed(self.layers[2:])):
             weighted_error = np.transpose(next_layer.weights).dot(next_layer.local_gradient)
             layer.__backpropagate__(weighted_error)
@@ -127,7 +127,6 @@ class NeuralNet:
         return self
 
     def set_loss(self, loss):
-        """@Deprecated, might cause backpropagation to work incorrectly."""
         self.loss = loss
         return self
 
