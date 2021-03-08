@@ -156,7 +156,7 @@ class NeuralNet:
             print("==========================")
 
         self.MSE_test.append(MSE.compute_loss(self.predict(x_test), np.transpose(y_test)))
-        self.MSE_train.append(MSE.compute_loss(self.predict(data), np.transpose(y)))
+        self.MSE_train.append(MSE.compute_loss(self.predict(np.transpose(data)), np.transpose(y)))
 
     def train(self, data, y, x_test, y_test, learning_rate=0.001, batch_size=10, verbose=True):
         """Calls backpropagation algorithm with given loss function to fit weights."""
@@ -164,7 +164,6 @@ class NeuralNet:
         # data and y have now each observation as column
         data = np.transpose(data)
         y = np.transpose(y)
-        x_test = np.transpose(x_test)
         y_test = np.transpose(y_test)
 
         # initialize some variables (loss_history with inf because of finding minimum later)
@@ -179,7 +178,7 @@ class NeuralNet:
             batches = zip(split(data, batch_size), split(y, batch_size))
             for index, batch in enumerate(batches):
                 # make prediction for given batch
-                self.predict(batch[0])
+                self.predict(np.transpose(batch[0]))
                 # run backpropagation with given batch
                 self.__backpropagate__(batch[1], learning_rate)
                 if verbose:
@@ -193,7 +192,7 @@ class NeuralNet:
 
     def predict(self, data):
         """Uses internal weights to predict answer for given data."""
-        self.layers[0].set_data(data)
+        self.layers[0].set_data(np.transpose(data))
         for layer in self.layers[1:]:
             layer.__predict__()
         return np.transpose(self.get_result())

@@ -23,5 +23,5 @@ nn = NeuralNet(2, weight_init=uniform_init)\
 nn.budget.set_epoch_limit(10).set_detection_limit(1.3)
 nn.train(x_train, y_train, x_test, y_test, learning_rate=0.02, batch_size=32)
 
-print(f'MSE: {MSE.compute_loss(nn.predict(np.transpose(x_train)), y_train)}')
+print(f'MSE: {MSE.compute_loss(nn.predict(x_train), y_train)}')
 
