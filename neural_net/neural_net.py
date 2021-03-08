@@ -90,7 +90,7 @@ class Layer:
 
 
 class NeuralNet:
-    def __init__(self, size, *, weight_init=zero_init, seed=None, name="neural_network"):
+    def __init__(self, size, *, weight_init=zero_init, seed=None, name="neural_network", plot_weights_=False):
         if seed:
             np.random.seed(seed)
         self.layers = [InputLayer(size)]
@@ -99,6 +99,7 @@ class NeuralNet:
         self.loss_history = None
         self.weight_init = weight_init
         self.name = name
+        self.plot_weights = plot_weights_
         self.budget = Budget()
 
     def __backpropagate__(self, y, learning_rate=0.001):
@@ -147,6 +148,15 @@ class NeuralNet:
             weight_loss += self.regularization.compute_loss(layer)
         return self.loss.compute_loss(self.get_result(), y) + weight_loss
 
+    def get_loss_history(self):
+        return self.loss_history
+
+    def get_MSE_train(self):
+        return self.MSE_train
+
+    def get_MSE_test(self):
+        return self.MSE_test
+
     def save_metrics(self, data, y, x_test, y_test, verbose):
         self.predict(x_test)
         loss = self.get_loss(y_test)
@@ -187,7 +197,8 @@ class NeuralNet:
             self.save_metrics(data, y, x_test, y_test, verbose)
             if not os.path.exists("plots"):
                 os.mkdir("plots")
-            plot_weights(self, "plots/NeuralNet_{0}.png".format(self.budget.epoch))
+            if self.plot_weights:
+                plot_weights(self, "plots/NeuralNet_{0}.png".format(self.budget.epoch))
             self.budget.epoch += 1
 
     def predict(self, data):
