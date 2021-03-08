@@ -13,7 +13,7 @@ train = pd.read_csv('datasets/neural_net/regression/data.cube.test.100.csv')
 x_train = train.iloc[:, :-1]
 y_train = train.iloc[:, -1:]
 
-nn = NeuralNet(1, uniform_init)\
+nn = NeuralNet(1, weight_init=uniform_init)\
     .add_layer(Layer(10, sigmoid))\
     .add_layer(Layer(15, sigmoid))\
     .add_layer(Layer(10, sigmoid))\
@@ -28,7 +28,7 @@ nn.train(x_train, y_train, learning_rate=0.02, batch_size=32)
 train = pd.read_csv('datasets/neural_net/classification/data.simple.train.100.csv')
 x_train, y_train = x_y_split(train, 'cls')
 
-nn = NeuralNet(2, uniform_init)\
+nn = NeuralNet(2, weight_init=uniform_init)\
     .add_layer(Layer(10, sigmoid))\
     .add_layer(Layer(15, sigmoid))\
     .add_layer(Layer(10, sigmoid))\

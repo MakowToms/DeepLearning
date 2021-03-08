@@ -14,7 +14,7 @@ test = pd.read_csv('datasets/neural_net/classification/data.simple.test.1000.csv
 x_train, y_train = x_y_split(train, 'cls')
 x_test, y_test = x_y_split(test, 'cls')
 
-nn = NeuralNet(2, uniform_init)\
+nn = NeuralNet(2, weight_init=uniform_init)\
     .add_layer(Layer(20, tanh))\
     .add_layer(Layer(2, softmax))\
     .set_optimizer(RMSProp.set_params({"coef": 0.1}))\

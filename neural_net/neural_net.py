@@ -90,7 +90,7 @@ class Layer:
 
 
 class NeuralNet:
-    def __init__(self, size, weight_init=zero_init, seed=None):
+    def __init__(self, size, *, weight_init=zero_init, seed=None, name="neural_network"):
         if seed:
             np.random.seed(seed)
         self.layers = [InputLayer(size)]
@@ -98,6 +98,7 @@ class NeuralNet:
         self.regularization = no_regularization
         self.loss_history = None
         self.weight_init = weight_init
+        self.name = name
         self.budget = Budget()
 
     def __backpropagate__(self, y, learning_rate=0.001):
