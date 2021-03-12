@@ -9,6 +9,23 @@ from neural_net.weights import uniform_init
 from neural_net.prepare_dataset import x_y_split
 
 
+# Classification
+train = pd.read_csv('datasets/neural_net/classification/data.simple.train.100.csv')
+x_train, y_train = x_y_split(train, 'cls')
+test = pd.read_csv('datasets/neural_net/classification/data.simple.test.100.csv')
+x_test, y_test = x_y_split(test, 'cls')
+
+nn = NeuralNet(2, uniform_init)\
+    .add_layer(Layer(10, sigmoid))\
+    .add_layer(Layer(15, sigmoid))\
+    .add_layer(Layer(10, sigmoid))\
+    .add_layer(Layer(2, sigmoid))\
+    .set_optimizer(momentum.set_params({"coef": 0.05}))\
+    .set_loss(hinge)
+nn.budget.set_epoch_limit(20).set_detection_limit(1.3)
+nn.train(x_train, y_train, x_test, y_test, learning_rate=0.02, batch_size=8)
+
+# Regression
 train = pd.read_csv('datasets/neural_net/regression/data.cube.test.100.csv')
 x_train = train.iloc[:, :-1]
 y_train = train.iloc[:, -1:]
