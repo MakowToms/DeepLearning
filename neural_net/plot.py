@@ -58,7 +58,7 @@ class Plotter:
         if n is None:
             n = len(errors[0])
         for index in range(len(errors)):
-            plt.plot([i for i in range(from_error, n)], errors[index][from_error:], color=self.get_color(index))
+            plt.plot([i + 1 for i in range(from_error, n)], errors[index][from_error:], color=self.get_color(index))
         labels = self._get_labels(labels, default_label_name='network')
         plt.legend(labels=labels)
         plt.title(f'{measure_name} through epochs')
