@@ -23,7 +23,7 @@ nn = NeuralNet(2, weight_init=uniform_init)\
     .set_optimizer(momentum.set_params({"coef": 0.05}))\
     .set_loss(hinge)
 nn.budget.set_epoch_limit(50).set_detection_limit(1.3)
-nn.train(x_train, y_train, x_test, y_test, learning_rate=0.02, batch_size=8)
+nn.fit(x_train, y_train, x_test, y_test, learning_rate=0.02, batch_size=8)
 
 # Regression
 train = pd.read_csv('datasets/neural_net/regression/data.cube.train.100.csv')
@@ -40,7 +40,7 @@ nn = NeuralNet(1, weight_init=uniform_init, plot_weights_=True)\
     .set_regularization(L1_regularization.set_params({"coef": 0.05}))\
     .set_loss(MAE)
 nn.budget.set_epoch_limit(10).set_detection_limit(1.3)
-nn.train(x_train, y_train, x_test, y_test, learning_rate=0.02, batch_size=16)
+nn.fit(x_train, y_train, x_test, y_test, learning_rate=0.02, batch_size=16)
 
 plotter = Plotter(x_test, y_test, [nn])\
     .plot_data_1d()

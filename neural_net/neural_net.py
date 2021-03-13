@@ -157,18 +157,26 @@ class NeuralNet:
     def get_MSE_test(self):
         return self.MSE_test
 
-    def save_metrics(self, data, y, x_test, y_test, verbose):
+    def save_metrics(self, data, y, x_test, y_test):
         self.predict(x_test)
         loss = self.get_loss(y_test)
         self.loss_history.append(loss)
-        if verbose:
-            print("Loss: {}".format(self.get_loss(y_test)))
-            print("==========================")
+        print("Loss: {}".format(self.get_loss(y_test)))
+        print("==========================")
 
         self.MSE_test.append(MSE.compute_loss(self.predict(x_test), np.transpose(y_test)))
         self.MSE_train.append(MSE.compute_loss(self.predict(np.transpose(data)), np.transpose(y)))
 
-    def train(self, data, y, x_test, y_test, learning_rate=0.001, batch_size=10, verbose=True):
+    def fit(self, data, y, x_test, y_test, learning_rate=0.001, batch_size=10):
+        for layer, previous_layer in zip(self.layers[1:], self.layers[:-1]):
+            layer.__add_input__(previous_layer, self.weight_init)
+        self.budget.epoch = 0
+        self._fit(data, y, x_test, y_test, learning_rate, batch_size)
+
+    def partial_fit(self, data, y, x_test, y_test, learning_rate=0.001, batch_size=10):
+        self._fit(data, y, x_test, y_test, learning_rate, batch_size)
+
+    def _fit(self, data, y, x_test, y_test, learning_rate, batch_size):
         """Calls backpropagation algorithm with given loss function to fit weights."""
 
         # data and y have now each observation as column
@@ -191,10 +199,9 @@ class NeuralNet:
                 self.predict(np.transpose(batch[0]))
                 # run backpropagation with given batch
                 self.__backpropagate__(batch[1], learning_rate)
-                if verbose:
-                    print("Batch {0}/{1}".format(index + 1, math.ceil(y.shape[1] / batch_size)), end="\r")
+                print("Batch {0}/{1}".format(index + 1, math.ceil(y.shape[1] / batch_size)), end="\r")
 
-            self.save_metrics(data, y, x_test, y_test, verbose)
+            self.save_metrics(data, y, x_test, y_test)
             if not os.path.exists("plots"):
                 os.mkdir("plots")
             if self.plot_weights:

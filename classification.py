@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 from neural_net.activations import softmax, tanh
 from neural_net.losses import LogLoss, MSE
@@ -22,8 +21,8 @@ nn = NeuralNet(2, weight_init=uniform_init)\
     .set_optimizer(RMSProp.set_params({"coef": 0.1}))\
     .set_regularization(L1_regularization.set_params({"coef": 0.05}))\
     .set_loss(LogLoss)
-nn.budget.set_epoch_limit(4).set_detection_limit(1.3)
-nn.train(x_train, y_train, x_test, y_test, learning_rate=0.02, batch_size=32)
+nn.budget.set_epoch_limit(3).set_detection_limit(1.3)
+nn.fit(x_train, y_train, x_test, y_test, learning_rate=0.02, batch_size=32)
 
 print(f'MSE: {MSE.compute_loss(nn.predict(x_train), y_train)}')
 
