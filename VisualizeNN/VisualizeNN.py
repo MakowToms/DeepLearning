@@ -21,7 +21,7 @@ class Neuron:
 
 
 class Layer:
-    def __init__(self, network, number_of_neurons, number_of_neurons_in_widest_layer):
+    def __init__(self, network, number_of_neurons, number_of_neurons_in_widest_layer, sparse_labels=True):
         self.vertical_distance_between_layers = 6
         self.horizontal_distance_between_neurons = 2
         self.neuron_radius = 0.5
@@ -29,6 +29,7 @@ class Layer:
         self.previous_layer = self.__get_previous_layer(network)
         self.y = self.__calculate_layer_y_position()
         self.neurons = self.__intialise_neurons(number_of_neurons)
+        self.sparse_labels = sparse_labels
 
     def __intialise_neurons(self, number_of_neurons):
         neurons = []
@@ -67,12 +68,12 @@ class Layer:
 
         # assign different linewidths to lines depending on the size of the weight
         abs_weight = abs(weight)
-        linewidth = 2 * abs_weight**2
+        linewidth = min(2 * abs_weight**2, 2.5)
         if abs_weight > 0.6:
-            linewidth *= 5
+            linewidth *= 3
 
         # draw the weights and adjust the labels of weights to avoid overlapping
-        if abs_weight > 0.6:
+        if (not self.sparse_labels) or (abs_weight > 0.6):
             # while loop to determine the optimal locaton for text lables to avoid overlapping
             index_step = 2
             num_segments = 10
@@ -146,16 +147,17 @@ class TextOverlappingHandler:
 
 
 class NeuralNetwork:
-    def __init__(self, number_of_neurons_in_widest_layer):
+    def __init__(self, number_of_neurons_in_widest_layer, sparse_labels=True):
         self.number_of_neurons_in_widest_layer = number_of_neurons_in_widest_layer
         self.layers = []
         self.layertype = 0
+        self.sparse_labels = sparse_labels
 
     def add_layer(self, number_of_neurons):
-        layer = Layer(self, number_of_neurons, self.number_of_neurons_in_widest_layer)
+        layer = Layer(self, number_of_neurons, self.number_of_neurons_in_widest_layer, sparse_labels=self.sparse_labels)
         self.layers.append(layer)
 
-    def draw(self, weights_list=None, plot_name="temp.png"):
+    def draw(self, weights_list, plot_title, file_name="temp.png"):
         # vertical_distance_between_layers and horizontal_distance_between_neurons are the same with the variables of the same name in layer class
         vertical_distance_between_layers = 6
         horizontal_distance_between_neurons = 2
@@ -175,8 +177,8 @@ class NeuralNetwork:
 
         pyplot.axis('scaled')
         pyplot.axis('off')
-        pyplot.title('Neural Network architecture', fontsize=15)
-        pyplot.savefig(plot_name, dpi=100, bbox_inches="tight")
+        pyplot.title(plot_title, fontsize=15)
+        pyplot.savefig(file_name, dpi=100, bbox_inches="tight")
         # pyplot.show()
 
 
@@ -185,10 +187,11 @@ class DrawNN:
     # from input layer to output layer, e.g., a neural network of 5 nerons in the input layer,
     # 10 neurons in the hidden layer 1 and 1 neuron in the output layer is [5, 10, 1]
     # para: weights_list (optional) is the output weights list of a neural network which can be obtained via classifier.coefs_
-    def __init__(self, neural_network, weights_list=None, plot_name=None):
+    def __init__(self, neural_network, plot_title, weights_list=None, file_name=None):
         self.neural_network = neural_network
+        self.plot_title = plot_title
         self.weights_list = weights_list
-        self.plot_name = plot_name if plot_name else "ANN_{0}.png".format(strftime("%Y%m%d_%H%M%S", localtime()))
+        self.file_name = file_name if file_name else "ANN_{0}.png".format(strftime("%Y%m%d_%H%M%S", localtime()))
         # if weights_list is none, then create a uniform list to fill the weights_list
         if weights_list is None:
             weights_list = []
@@ -197,9 +200,9 @@ class DrawNN:
                 weights_list.append(tempArr)
             self.weights_list = weights_list
 
-    def draw(self):
+    def draw(self, sparse_labels=True):
         widest_layer = max(self.neural_network)
-        network = NeuralNetwork(widest_layer)
+        network = NeuralNetwork(widest_layer, sparse_labels)
         for l in self.neural_network:
             network.add_layer(l)
-        network.draw(self.weights_list, self.plot_name)
+        network.draw(self.weights_list, self.plot_title, self.file_name)

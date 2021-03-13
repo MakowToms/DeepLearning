@@ -9,7 +9,7 @@ from neural_net.budget import Budget
 from neural_net.losses import MSE
 from neural_net.optimizers import no_optimizer
 from neural_net.regularizations import no_regularization
-from neural_net.weight_plotter import plot_weights
+from neural_net.weight_plotter import plot_weights, plot_errors
 from neural_net.weights import zero_init
 
 # Taken from https://stackoverflow.com/questions/15713279/calling-pylab-savefig-without-display-in-ipython#15713545
@@ -52,6 +52,8 @@ class Layer:
         self.optimizer = no_optimizer
         self.weights_momentum = None
         self.biases_momentum = None
+        # error plot
+        self.last_error = None
 
     def __add_input__(self, inp, weight_init):
         """Passes reference to input Layer object and initializes weights."""
@@ -85,6 +87,9 @@ class Layer:
                 # apply derivative of neuron activation function to activation values of this neuron and whole layer
                 values[j, i] = self.activations[j].get_derivative()(self.weighted_input[j, i], self.weighted_input[:, i])
         self.local_gradient = np.multiply(values, weighted_error)
+
+        # saves weighted error for each edge to visualize it
+        self.last_error = self.local_gradient.dot(np.transpose(self.input.values))
         # optimization (computing weight and bias differences mostly)
         self.optimizer.optimize(self)
 
@@ -205,7 +210,8 @@ class NeuralNet:
             if not os.path.exists("plots"):
                 os.mkdir("plots")
             if self.plot_weights:
-                plot_weights(self, "plots/NeuralNet_{0}.png".format(self.budget.epoch))
+                plot_weights(self, "plots/{0}_weights_{1}.png".format(self.name, self.budget.epoch + 1))
+                plot_errors(self, "plots/{0}_errors_{1}.png".format(self.name, self.budget.epoch + 1))
             self.budget.epoch += 1
 
     def predict(self, data):
