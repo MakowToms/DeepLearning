@@ -1,15 +1,21 @@
-import pandas as pd
-import numpy as np
+import os
+
 import matplotlib.pyplot as plt
+import numpy as np
 
 from neural_net.activations import softmax, tanh, sigmoid, ReLU, linear
+from neural_net.datasets import datasets
 from neural_net.losses import LogLoss, MSE
 from neural_net.neural_net import NeuralNet, Layer
 from neural_net.optimizers import RMSProp
+from neural_net.plot import Plotter
 from neural_net.regularizations import L1_regularization
 from neural_net.weights import uniform_init
-from neural_net.plot import Plotter
-from neural_net.datasets import datasets
+
+if not os.path.exists("plots"):
+    os.mkdir("plots")
+if not os.path.exists("plots/activations"):
+    os.mkdir("plots/activations")
 
 np.random.seed(123)
 for dataset in datasets:
@@ -43,13 +49,15 @@ for dataset in datasets:
     plotter = Plotter(dataset.x_test, dataset.y_test, nns)
     plt.subplots(2, 2)
     plt.subplot(2, 2, 1)
-    plotter.boxplot_of_errors(activation_error, 0, 'Loss train')
+    plotter.boxplot_of_errors(activation_error, 0, 'Loss train', show=False)
     plt.subplot(2, 2, 2)
-    plotter.boxplot_of_errors(activation_error, 1, 'Loss test')
+    plotter.boxplot_of_errors(activation_error, 1, 'Loss test', show=False)
     plt.subplot(2, 2, 3)
-    plotter.boxplot_of_errors(activation_error, 2, f'{error_name} train')
+    plotter.boxplot_of_errors(activation_error, 2, f'{error_name} train', show=False)
     plt.subplot(2, 2, 4)
-    plotter.boxplot_of_errors(activation_error, 3, f'{error_name} test')
+    plotter.boxplot_of_errors(activation_error, 3, f'{error_name} test', show=False)
+    plt.savefig("plots/activations/{0}_{1}_loss_boxplot.png".format(dataset.name, dataset.size),
+                dpi=100, bbox_inches="tight")
 
     # plot errors from last evaluation
     plt.subplots(2, 2)
@@ -61,15 +69,20 @@ for dataset in datasets:
     plotter.plot_measure_results_data(NeuralNet.get_MSE_test, f'{error_name} test', show=False)
     plt.subplot(2, 2, 4)
     plotter.plot_measure_results_data(NeuralNet.get_MSE_train, f'{error_name} train', show=False)
-    plt.show()
+    plt.savefig("plots/activations/{0}_{1}_loss_history.png".format(dataset.name, dataset.size),
+                dpi=100, bbox_inches="tight")
 
     # plot data 1d or 2d
     if dataset.task_type == "classification":
         plt.subplots(2, 2)
-        for i in range(4):
+        for i, activation in enumerate([linear, ReLU, sigmoid, tanh]):
             plt.subplot(2, 2, i+1)
-            plotter.plot_data_2d(i)
+            plotter.plot_data_2d(i, title='Points on the plane for activation={0}'.format(activation.name), show=False)
+            plt.savefig("plots/activations/{0}_{1}_points.png".format(dataset.name, dataset.size),
+                        dpi=100, bbox_inches="tight")
     else:
         plt.subplots(1, 1)
-        plotter.plot_data_1d()
+        plotter.plot_data_1d(show=False)
+        plt.savefig("plots/activations/{0}_{1}_values.png".format(dataset.name, dataset.size),
+                    dpi=100, bbox_inches="tight")
 

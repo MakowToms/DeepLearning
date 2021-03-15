@@ -35,7 +35,7 @@ class Plotter:
         return self
 
     # visualization of 2d data
-    def plot_data_2d(self, nn_index, show=True):
+    def plot_data_2d(self, nn_index, title='Points on the plane', show=True):
         X1, X2 = np.meshgrid(np.arange(start=self.x_test[:, 0].min(), stop=self.x_test[:, 0].max(), step=0.01),
                              np.arange(start=self.x_test[:, 1].min(), stop=self.x_test[:, 1].max(), step=0.01))
         plt.contourf(X1, X2, self.networks[nn_index].predict_with_threshold(np.array([X1.ravel(), X2.ravel()]).T).reshape(X1.shape),
@@ -48,7 +48,7 @@ class Plotter:
         for i, j in enumerate(np.unique(y_test)):
             plt.scatter(self.x_test[y_test == j, 0], self.x_test[y_test == j, 1],
                         c=ListedColormap(('red', 'green', 'blue'))(i), label=j)
-        plt.title('Points on the plane')
+        plt.title(title)
         plt.xlabel('y')
         plt.ylabel('x')
         if show:
