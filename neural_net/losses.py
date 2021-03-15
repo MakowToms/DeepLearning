@@ -38,7 +38,7 @@ def _log_loss_derivative(y_hat, y):
 
 
 LogLoss = Loss(
-    lambda y_hat, y: -np.sum(np.transpose(y*np.log(y_hat) + (1-y)*np.log(1-y_hat))),
+    lambda y_hat, y: -np.sum(np.transpose(y*np.log(np.maximum(y_hat, np.ones(y_hat.shape)/10**6)) + (1-y)*np.log(np.maximum(1-y_hat, np.ones(y_hat.shape)/10**6)))),
     _log_loss_derivative
 )
 
