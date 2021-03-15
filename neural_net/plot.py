@@ -61,7 +61,7 @@ class Plotter:
         for network in self.networks:
             errors.append(measure_function(network))
         for index in range(len(errors)):
-            plt.plot([i + 1 for i in range(from_error, len(errors[index]))], errors[index][from_error:], color=self.get_color(index))
+            plt.plot([i + 1 for i in range(from_error, len(errors[index]))], errors[index][from_error:], color=self.get_color(index+1))
         labels = self._get_labels(labels, default_label_name='network')
         plt.legend(labels=labels)
         plt.title(f'{measure_name} through epochs')
@@ -93,7 +93,6 @@ class Plotter:
         plt.title(title)
         if show:
             plt.show()
-        plt.ylabel('error')
         return self
 
     def _get_labels(self, labels, label0=None, default_label_name='label'):
