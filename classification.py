@@ -28,6 +28,6 @@ print(f'MSE: {MSE.compute_loss(nn.predict(x_train), y_train)}')
 
 plotter = Plotter(x_test, y_test, [nn])
 plotter.plot_data_1d()
-plotter.plot_measure_results_data(NeuralNet.get_loss_history, "LogLoss")
+plotter.plot_measure_results_data(NeuralNet.get_loss_test, "LogLoss")
 plotter.plot_measure_results_data(NeuralNet.get_MSE_test, "MSE test")
 

@@ -153,8 +153,11 @@ class NeuralNet:
             weight_loss += self.regularization.compute_loss(layer)
         return self.loss.compute_loss(self.get_result(), y) + weight_loss
 
-    def get_loss_history(self):
-        return self.loss_history
+    def get_loss_train(self):
+        return self.loss_history_train
+
+    def get_loss_test(self):
+        return self.loss_history_test
 
     def get_MSE_train(self):
         return self.MSE_train
@@ -169,7 +172,7 @@ class NeuralNet:
         print("Loss: {}".format(self.get_loss(y_test)))
         print("==========================")
 
-        self.predict(data)
+        self.predict(data.T)
         loss = self.get_loss(y)
         self.loss_history_train.append(loss)
 
@@ -203,7 +206,7 @@ class NeuralNet:
         self.MSE_train = []
         self.MSE_test = []
 
-        while not self.budget.finished(self.loss_history):
+        while not self.budget.finished(self.loss_history_test):
             print("Epoch: {}".format(self.budget.epoch + 1))
             # split data into batches
             data, y = self.__shuffle__(data, y)
