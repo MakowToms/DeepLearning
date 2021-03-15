@@ -28,8 +28,8 @@ ReLU = Activation(
     'ReLU'
 )
 sigmoid = Activation(
-    lambda x, layer: (np.exp(-x) + 1) ** (-1),
-    lambda x, layer: (np.exp(-x) + 1) ** (-1) * (1 - (np.exp(-x) + 1) ** (-1)),
+    lambda x, layer: np.e**x / (1 + np.e**x),
+    lambda x, layer: np.e**x / ((1 + np.e**x) ** 2),
     'sigmoid'
 )
 tanh = Activation(
