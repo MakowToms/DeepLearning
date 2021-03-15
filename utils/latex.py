@@ -61,19 +61,3 @@ def save_activation_error_to_latex(activation_error, activations, metrics, filen
                 add_separator(f, (act_index == len(activations) - 1) and (met_index == len(metrics) - 1))
         f.write("\\hline\n")
         f.write("\\end{tabularx}\n")
-
-# \begin{tabular}{ |p{3cm}||p{3cm}|p{3cm}|p{3cm}|  }
-#  \hline
-#  \multicolumn{4}{|c|}{Country List} \\
-#  \hline
-#  Country Name     or Area Name& ISO ALPHA 2 Code &ISO ALPHA 3 Code&ISO numeric Code\\
-#  \hline
-#  Afghanistan   & AF    &AFG&   004\\
-#  Aland Islands&   AX  & ALA   &248\\
-#  Albania &AL & ALB&  008\\
-#  Algeria    &DZ & DZA&  012\\
-#  American Samoa&   AS  & ASM&016\\
-#  Andorra& AD  & AND   &020\\
-#  Angola& AO  & AGO&024\\
-#  \hline
-# \end{tabular}
