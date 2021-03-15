@@ -1,3 +1,6 @@
+import statistics
+
+
 def add_separator(f, condition):
     if condition:
         f.write(" \\\\\n")
@@ -10,6 +13,7 @@ def save_activation_error_to_latex(activation_error, activations, metrics, filen
         f.write(r"\begin{tabularx}{\textwidth}{ |" + "X|" * len(activations) * len(metrics) + " }\n")
         f.write("\\hline\n")
 
+        # headers
         for i, metric in enumerate(metrics):
             f.write("\\multicolumn{{{0}}}{{|c|}}{{{1}}}".format(
                 len(activations), metric))
@@ -24,6 +28,7 @@ def save_activation_error_to_latex(activation_error, activations, metrics, filen
             add_separator(f, i == len(metrics) * len(activations) - 1)
         f.write("\\hline\n")
 
+        # values
         for i in range(len(activation_error[0][0])):
             for met_index, metric in enumerate(metrics):
                 for act_index, activation in enumerate(activations):
@@ -32,6 +37,28 @@ def save_activation_error_to_latex(activation_error, activations, metrics, filen
                     else:
                         f.write("{:.3f}".format(activation_error[act_index][met_index][i]))
                     add_separator(f, (act_index == len(activations) - 1) and (met_index == len(metrics) - 1))
+        f.write("\\hline\n")
+
+        # means
+        for met_index, metric in enumerate(metrics):
+            for act_index, activation in enumerate(activations):
+                value = statistics.mean(activation_error[act_index][met_index])
+                if shrink:
+                    f.write("\\footnotesize{{{:.3f}}}".format(value))
+                else:
+                    f.write("{:.3f}".format(value))
+                add_separator(f, (act_index == len(activations) - 1) and (met_index == len(metrics) - 1))
+        f.write("\\hline\n")
+
+        # standard deviations
+        for met_index, metric in enumerate(metrics):
+            for act_index, activation in enumerate(activations):
+                value = statistics.stdev(activation_error[act_index][met_index])
+                if shrink:
+                    f.write("\\footnotesize{{{:.3f}}}".format(value))
+                else:
+                    f.write("{:.3f}".format(value))
+                add_separator(f, (act_index == len(activations) - 1) and (met_index == len(metrics) - 1))
         f.write("\\hline\n")
         f.write("\\end{tabularx}\n")
 
