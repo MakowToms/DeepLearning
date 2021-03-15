@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from neural_net.activations import softmax, tanh, sigmoid, ReLU, linear
-from neural_net.datasets import datasets
+from neural_net.datasets import Dataset
 from neural_net.losses import MSE, hinge
 from neural_net.neural_net import NeuralNet, Layer
 from neural_net.optimizers import RMSProp
@@ -21,6 +21,11 @@ if not os.path.exists("tables"):
     os.mkdir("tables")
 if not os.path.exists("tables/activations"):
     os.mkdir("tables/activations")
+
+sizes = [100, 500, 1000]
+names = [("simple", "classification"), ("three_gauss", "classification"),
+         ("activation", "regression"), ("cube", "regression")]
+datasets = [Dataset(name, task_type, size) for name, task_type in names for size in sizes]
 
 np.random.seed(123)
 for dataset in datasets:
@@ -59,6 +64,7 @@ for dataset in datasets:
     # plot error boxplot
     plotter = Plotter(dataset.x_test, dataset.y_test, nns)
     plt.subplots(2, 2)
+    plt.subplots_adjust(wspace=0.3, hspace=0.6)
     plt.subplot(2, 2, 1)
     plotter.boxplot_of_errors(activation_error, 0, 'Loss train', show=False)
     plt.subplot(2, 2, 2)
@@ -72,6 +78,7 @@ for dataset in datasets:
 
     # plot errors from last evaluation
     plt.subplots(2, 2)
+    plt.subplots_adjust(wspace=0.3, hspace=0.6)
     plt.subplot(2, 2, 1)
     plotter.plot_measure_results_data(NeuralNet.get_loss_test, 'Loss test', show=False)
     plt.subplot(2, 2, 2)
@@ -86,9 +93,10 @@ for dataset in datasets:
     # plot data 1d or 2d
     if dataset.task_type == "classification":
         plt.subplots(2, 2)
+        plt.subplots_adjust(wspace=0.3, hspace=0.5)
         for i, activation in enumerate(activations):
             plt.subplot(2, 2, i+1)
-            plotter.plot_data_2d(i, title='Points on the plane for activation={0}'.format(activation.name), show=False)
+            plotter.plot_data_2d(i, title='Points for activation={0}'.format(activation.name), show=False)
             plt.savefig("plots/activations/{0}_{1}_points.png".format(dataset.name, dataset.size),
                         dpi=100, bbox_inches="tight")
     else:
