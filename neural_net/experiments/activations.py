@@ -11,11 +11,16 @@ from neural_net.optimizers import RMSProp
 from neural_net.plot import Plotter
 from neural_net.regularizations import L1_regularization
 from neural_net.weights import uniform_init
+from utils.latex import save_activation_error_to_latex
 
 if not os.path.exists("plots"):
     os.mkdir("plots")
 if not os.path.exists("plots/activations"):
     os.mkdir("plots/activations")
+if not os.path.exists("tables"):
+    os.mkdir("tables")
+if not os.path.exists("tables/activations"):
+    os.mkdir("tables/activations")
 
 np.random.seed(123)
 for dataset in datasets:
@@ -24,8 +29,9 @@ for dataset in datasets:
     n_output_neurons = dataset.y_train.shape[1] if dataset.task_type == "classification" else 1
     loss = LogLoss if dataset.task_type == "classification" else MSE
     error_name = 'Accuracy' if dataset.task_type == "classification" else 'MSE'
+    activations = [linear, ReLU, sigmoid, tanh]
     activation_error = []
-    for activation in [linear, ReLU, sigmoid, tanh]:
+    for activation in activations:
         nn = NeuralNet(dataset.x_train.shape[1], weight_init=uniform_init, name=activation.name,
                        is_regression=dataset.task_type == "regression") \
             .add_layer(Layer(20, activation)) \
@@ -44,6 +50,12 @@ for dataset in datasets:
             errors[3][i] = nn.get_MSE_test()[-1]
         nns.append(nn)
         activation_error.append(errors)
+    
+    save_activation_error_to_latex(activation_error, activations,
+                                   ["{0} on train".format(loss.name), "{0} on test".format(loss.name),
+                                    "{0} on train".format(error_name), "{0} on test".format(error_name)],
+                                   "tables/activations/{0}_{1}.txt".format(dataset.name, dataset.size),
+                                   shrink=True)
 
     # plot error boxplot
     plotter = Plotter(dataset.x_test, dataset.y_test, nns)
@@ -75,7 +87,7 @@ for dataset in datasets:
     # plot data 1d or 2d
     if dataset.task_type == "classification":
         plt.subplots(2, 2)
-        for i, activation in enumerate([linear, ReLU, sigmoid, tanh]):
+        for i, activation in enumerate(activations):
             plt.subplot(2, 2, i+1)
             plotter.plot_data_2d(i, title='Points on the plane for activation={0}'.format(activation.name), show=False)
             plt.savefig("plots/activations/{0}_{1}_points.png".format(dataset.name, dataset.size),
