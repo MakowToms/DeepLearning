@@ -5,7 +5,7 @@ import numpy as np
 
 from neural_net.activations import softmax, tanh, sigmoid, ReLU, linear
 from neural_net.datasets import datasets
-from neural_net.losses import LogLoss, MSE
+from neural_net.losses import MSE, hinge
 from neural_net.neural_net import NeuralNet, Layer
 from neural_net.optimizers import RMSProp
 from neural_net.plot import Plotter
@@ -27,7 +27,7 @@ for dataset in datasets:
     nns = []
     output_activation = softmax if dataset.task_type == "classification" else linear
     n_output_neurons = dataset.y_train.shape[1] if dataset.task_type == "classification" else 1
-    loss = LogLoss if dataset.task_type == "classification" else MSE
+    loss = hinge if dataset.task_type == "classification" else MSE
     error_name = 'Accuracy' if dataset.task_type == "classification" else 'MSE'
     activations = [linear, ReLU, sigmoid, tanh]
     activation_error = []
@@ -39,7 +39,7 @@ for dataset in datasets:
             .set_optimizer(RMSProp.set_params({"coef": 0.9})) \
             .set_regularization(L1_regularization.set_params({"coef": 0.0001})) \
             .set_loss(loss)
-        nn.budget.set_epoch_limit(100).set_detection_limit(2)
+        nn.budget.set_epoch_limit(100).set_detection_limit(3)
         n = 10
         errors = [np.empty(n), np.empty(n), np.empty(n), np.empty(n)]
         for i in range(n):
@@ -50,7 +50,6 @@ for dataset in datasets:
             errors[3][i] = nn.get_MSE_test()[-1]
         nns.append(nn)
         activation_error.append(errors)
-    
     save_activation_error_to_latex(activation_error, activations,
                                    ["{0} on train".format(loss.name), "{0} on test".format(loss.name),
                                     "{0} on train".format(error_name), "{0} on test".format(error_name)],
