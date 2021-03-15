@@ -40,7 +40,7 @@ class Layer:
         self.biases = None
         # activations
         # setting it like that allows manually setting different activations for different neurons within layer
-        self.activations = np.array([activation] * size)
+        self.activation = activation
         # computed values
         self.weighted_input = None
         self.values = None
@@ -69,11 +69,14 @@ class Layer:
         self.values = np.zeros(self.weighted_input.shape)
         # apply activation function to neuron
         # iterate over observations
-        for i in range(self.weighted_input.shape[1]):
-            # iterate over neurons within layer
-            for j in range(self.weighted_input.shape[0]):
-                # apply neuron activation function to activation values of this neuron and whole layer
-                self.values[j, i] = self.activations[j].get_function()(self.weighted_input[j, i], self.weighted_input[:, i])
+        if self.activation.name == 'softmax':
+            for i in range(self.weighted_input.shape[1]):
+                # iterate over neurons within layer
+                for j in range(self.weighted_input.shape[0]):
+                    # apply neuron activation function to activation values of this neuron and whole layer
+                    self.values[j, i] = self.activation.get_function()(self.weighted_input[j, i], self.weighted_input[:, i])
+        else:
+            self.values = self.activation.get_function()(self.weighted_input, "whatever")
         # NOTE: there used to be vectorized function, but passing whole layer made it too complicated
 
     def __backpropagate__(self, weighted_error=None):
@@ -81,11 +84,15 @@ class Layer:
         values = np.zeros(self.weighted_input.shape)
         # apply derivative of activation function to neuron
         # iterate over observations
-        for i in range(self.weighted_input.shape[1]):
-            # iterate over neurons within layer
-            for j in range(self.weighted_input.shape[0]):
-                # apply derivative of neuron activation function to activation values of this neuron and whole layer
-                values[j, i] = self.activations[j].get_derivative()(self.weighted_input[j, i], self.weighted_input[:, i])
+        if self.activation.name == 'softmax':
+            for i in range(self.weighted_input.shape[1]):
+                # iterate over neurons within layer
+                for j in range(self.weighted_input.shape[0]):
+                    # apply derivative of neuron activation function to activation values of this neuron and whole layer
+                    values[j, i] = self.activation.get_derivative()(self.weighted_input[j, i], self.weighted_input[:, i])
+        else:
+            values = self.activation.get_derivative()(self.weighted_input, "whatever")
+
         self.local_gradient = np.multiply(values, weighted_error)
 
         # saves weighted error for each edge to visualize it

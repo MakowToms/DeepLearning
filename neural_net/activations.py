@@ -19,12 +19,12 @@ class Activation:
 
 linear = Activation(
     lambda x, layer: x,
-    lambda x, layer: 1,
+    lambda x, layer: np.ones(x.shape),
     'linear'
 )
 ReLU = Activation(
-    lambda x, layer: max(x, 0),
-    lambda x, layer: 1 if x > 0 else 0,
+    lambda x, layer: np.maximum(x, 0),
+    lambda x, layer: (np.sign(x) + 1) / 2,
     'ReLU'
 )
 sigmoid = Activation(
