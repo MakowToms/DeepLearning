@@ -1,3 +1,5 @@
+import numpy as np
+from matplotlib.colors import ListedColormap
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('TkAgg')
@@ -33,22 +35,25 @@ class Plotter:
         return self
 
     # visualization of 2d data
-    @FutureWarning
-    def plot_data_2d(self, x, y, colors, show=True):
-        pass
-        # uniques = np.unique(colors)
-        # labels = []
-        # for index, unique in enumerate(uniques):
-        #     indexes = colors == unique
-        #     plt.plot(x[indexes], y[indexes], 'o', self.get_color(index))
-        #     labels.append('class ' + str(int(unique)))
-        # plt.legend(labels=labels)
-        # plt.title('Points on the plane')
-        # plt.xlabel('y')
-        # plt.ylabel('x')
-        # if show:
-        #     plt.show()
-        # return self
+    def plot_data_2d(self, nn_index, show=True):
+        X1, X2 = np.meshgrid(np.arange(start=self.x_test[:, 0].min(), stop=self.x_test[:, 0].max(), step=0.01),
+                             np.arange(start=self.x_test[:, 1].min(), stop=self.x_test[:, 1].max(), step=0.01))
+        plt.contourf(X1, X2, self.networks[nn_index].predict_with_threshold(np.array([X1.ravel(), X2.ravel()]).T).reshape(X1.shape),
+                     alpha=0.5, cmap=ListedColormap(('red', 'green', 'blue')))
+        plt.xlim(X1.min(), X1.max())
+        plt.ylim(X2.min(), X2.max())
+        y_test = np.zeros(self.y_test.shape[0])
+        for i in range(self.y_test.shape[1]):
+            y_test[self.y_test[:, i] == 1] = i
+        for i, j in enumerate(np.unique(y_test)):
+            plt.scatter(self.x_test[y_test == j, 0], self.x_test[y_test == j, 1],
+                        c=ListedColormap(('red', 'green', 'blue'))(i), label=j)
+        plt.title('Points on the plane')
+        plt.xlabel('y')
+        plt.ylabel('x')
+        if show:
+            plt.show()
+        return self
 
     # plot which shows mse or accuracy
     def plot_measure_results_data(self, measure_function, measure_name, labels=None, from_error=0, show=True, y_log=False):
@@ -80,6 +85,15 @@ class Plotter:
         plt.ylabel('result values')
         if show:
             plt.show()
+        return self
+
+    def boxplot_of_errors(self, errors, index, title, show=True):
+        plt.boxplot(np.array([errors[i][index] for i in range(len(errors))]).T)
+        plt.xticks(ticks=np.arange(1, len(errors)+1, 1), labels=[nn.name for nn in self.networks])
+        plt.title(title)
+        if show:
+            plt.show()
+        plt.ylabel('error')
         return self
 
     def _get_labels(self, labels, label0=None, default_label_name='label'):

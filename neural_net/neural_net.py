@@ -240,6 +240,18 @@ class NeuralNet:
             layer.__predict__()
         return np.transpose(self.get_result())
 
+    def predict_with_threshold(self, data, threshold=0.5):
+        self.layers[0].set_data(np.transpose(data))
+        for layer in self.layers[1:]:
+            layer.__predict__()
+        results = np.transpose(self.get_result())
+        if results.shape[1] == 1:
+            return results
+        results_1d = np.zeros(results.shape[0])
+        for i in range(results.shape[1]):
+            results_1d[results[:, i] > threshold] = i
+        return results_1d
+
     def plot_prediction(self, x, y):
         """Works for 1D data, that is - one x column and one y column."""
         self.predict(x)
