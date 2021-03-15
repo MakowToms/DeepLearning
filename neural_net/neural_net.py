@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from neural_net.budget import Budget
-from neural_net.losses import MSE
+from neural_net.losses import MSE, accuracy
 from neural_net.optimizers import no_optimizer
 from neural_net.regularizations import no_regularization
 from neural_net.weight_plotter import plot_weights, plot_errors
@@ -95,17 +95,17 @@ class Layer:
 
 
 class NeuralNet:
-    def __init__(self, size, *, weight_init=zero_init, seed=None, name="neural_network", plot_weights_=False):
+    def __init__(self, size, *, weight_init=zero_init, seed=None, name="neural_network", plot_weights_=False, is_regression=True):
         if seed:
             np.random.seed(seed)
         self.layers = [InputLayer(size)]
         self.loss = MSE
         self.regularization = no_regularization
-        self.loss_history = None
         self.weight_init = weight_init
         self.name = name
         self.plot_weights = plot_weights_
         self.budget = Budget()
+        self.is_regression = is_regression
 
     def __backpropagate__(self, y, learning_rate=0.001):
         # compute weight and bias changes for every layer starting with the last
@@ -165,12 +165,20 @@ class NeuralNet:
     def save_metrics(self, data, y, x_test, y_test):
         self.predict(x_test)
         loss = self.get_loss(y_test)
-        self.loss_history.append(loss)
+        self.loss_history_test.append(loss)
         print("Loss: {}".format(self.get_loss(y_test)))
         print("==========================")
 
-        self.MSE_test.append(MSE.compute_loss(self.predict(x_test), np.transpose(y_test)))
-        self.MSE_train.append(MSE.compute_loss(self.predict(np.transpose(data)), np.transpose(y)))
+        self.predict(data)
+        loss = self.get_loss(y)
+        self.loss_history_train.append(loss)
+
+        if self.is_regression:
+            self.MSE_test.append(MSE.compute_loss(self.predict(x_test), np.transpose(y_test)))
+            self.MSE_train.append(MSE.compute_loss(self.predict(np.transpose(data)), np.transpose(y)))
+        else:
+            self.MSE_test.append(accuracy(self.predict(x_test), np.transpose(y_test)))
+            self.MSE_train.append(accuracy(self.predict(np.transpose(data)), np.transpose(y)))
 
     def fit(self, data, y, x_test, y_test, learning_rate=0.001, batch_size=10):
         for layer, previous_layer in zip(self.layers[1:], self.layers[:-1]):
@@ -190,7 +198,8 @@ class NeuralNet:
         y_test = np.transpose(y_test)
 
         # initialize some variables (loss_history with inf because of finding minimum later)
-        self.loss_history = []
+        self.loss_history_train = []
+        self.loss_history_test = []
         self.MSE_train = []
         self.MSE_test = []
 

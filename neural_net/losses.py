@@ -41,3 +41,11 @@ LogLoss = Loss(
     lambda y_hat, y: -np.sum(np.transpose(y*np.log(y_hat) + (1-y)*np.log(1-y_hat))),
     _log_loss_derivative
 )
+
+
+# it's not loss, but it is useful in metric in classification problem
+def accuracy(y_hat, y, threshold=0.5):
+    n_observations = y.shape[0]
+    proper_classified = np.sum(np.logical_and(y_hat >= threshold, y == 1))
+    proper_classified += np.sum(np.logical_and(y_hat < threshold, y == 0))
+    return proper_classified / n_observations
