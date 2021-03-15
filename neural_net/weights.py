@@ -17,8 +17,8 @@ zero_init = WeightInitializer(
     lambda layer: np.array([[0.0] for _ in range(layer.size)])
 )
 uniform_init = WeightInitializer(
-    lambda layer: np.array([[np.random.uniform(0, 1) for _ in range(layer.input.size)] for _ in range(layer.size)]),
-    lambda layer: np.array([[np.random.uniform(0, 1)] for _ in range(layer.size)])
+    lambda layer: np.array([[np.random.uniform(-1/2, 1/2) for _ in range(layer.input.size)] for _ in range(layer.size)]),
+    lambda layer: np.array([[np.random.uniform(1/2, 1/2)] for _ in range(layer.size)])
 )
 normal_init = WeightInitializer(
     lambda layer: np.array([[np.random.normal(0, 1) for _ in range(layer.input.size)] for _ in range(layer.size)]),
