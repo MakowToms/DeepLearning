@@ -95,7 +95,7 @@ class Layer:
 
 
 class NeuralNet:
-    def __init__(self, size, *, weight_init=zero_init, seed=None, name="neural_network", plot_weights_=False, is_regression=True):
+    def __init__(self, size, *, weight_init=zero_init, seed=None, name="neural_network", visualize=False, is_regression=True):
         if seed:
             np.random.seed(seed)
         self.layers = [InputLayer(size)]
@@ -103,7 +103,7 @@ class NeuralNet:
         self.regularization = no_regularization
         self.weight_init = weight_init
         self.name = name
-        self.plot_weights = plot_weights_
+        self.visualize = visualize
         self.budget = Budget()
         self.is_regression = is_regression
 
@@ -221,7 +221,7 @@ class NeuralNet:
             self.save_metrics(data, y, x_test, y_test)
             if not os.path.exists("plots"):
                 os.mkdir("plots")
-            if self.plot_weights:
+            if self.visualize:
                 plot_weights(self, "plots/{0}_weights_{1}.png".format(self.name, self.budget.epoch + 1))
                 plot_errors(self, "plots/{0}_errors_{1}.png".format(self.name, self.budget.epoch + 1))
             self.budget.epoch += 1
