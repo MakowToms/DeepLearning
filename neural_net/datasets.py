@@ -9,13 +9,14 @@ class Dataset:
         test = pd.read_csv('datasets/neural_net/{0}/data.{1}.test.{2}.csv'.format(task_type, name, size))
 
         self.name = name
+        self.task_type = task_type
+        self.size = size
         if task_type == "classification":
             self.x_train, self.y_train = x_y_split(train, 'cls')
             self.x_test, self.y_test = x_y_split(test, 'cls')
         else:
             self.x_train, self.y_train = x_y_split_by_index(train, -1)
             self.x_test, self.y_test = x_y_split_by_index(test, -1)
-        self.task_type = task_type
 
 
 sizes = [100, 500, 1000, 10000]
