@@ -24,7 +24,7 @@ def save_activation_error_to_latex(activation_error, activations, metrics, filen
                 f.write(r"{0} & ".format(activation.name))
                 mean = statistics.mean(activation_error[act_index][met_index])
                 std = statistics.stdev(activation_error[act_index][met_index])
-                f.write(r"{0:.3f} \pm {1:.3f} \\".format(mean, std))
+                f.write(r"${0:.3f} \pm {1:.3f}$ \\".format(mean, std))
                 f.write("\n")
             f.write("\\hline\n")
         f.write("\\end{tabularx}\n")
