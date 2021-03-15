@@ -2,9 +2,10 @@ import numpy as np
 
 
 class Loss:
-    def __init__(self, function, derivative):
+    def __init__(self, function, derivative, name):
         self.function = function
         self.derivative = derivative
+        self.name = name
 
     def compute_loss(self, y_hat, y):
         """Returns additional cost (loss) associated with layer parameters, usually weights."""
@@ -17,15 +18,18 @@ class Loss:
 
 MSE = Loss(
     lambda y_hat, y: np.mean(np.transpose(y_hat - y) ** 2) / 2,
-    lambda y_hat, y: y_hat - y
+    lambda y_hat, y: y_hat - y,
+    "MSE"
 )
 MAE = Loss(
     lambda y_hat, y: np.mean(np.transpose(np.abs(y_hat - y))),
-    lambda y_hat, y: np.sign(y_hat - y)
+    lambda y_hat, y: np.sign(y_hat - y),
+    "MAE"
 )
 hinge = Loss(
     lambda y_hat, y: np.sum(np.transpose(np.maximum(np.equal(y, 0) * (y_hat - y), 0) - np.maximum(np.equal(y, 1) * (y_hat - y), 0))),
-    lambda y_hat, y: np.array(np.equal(y, 0) * np.greater(y_hat, 0), dtype=np.int32) - np.equal(y, 1) * np.less(y_hat, 1)
+    lambda y_hat, y: np.array(np.equal(y, 0) * np.greater(y_hat, 0), dtype=np.int32) - np.equal(y, 1) * np.less(y_hat, 1),
+    "hinge"
 )
 
 
@@ -39,7 +43,8 @@ def _log_loss_derivative(y_hat, y):
 
 LogLoss = Loss(
     lambda y_hat, y: -np.sum(np.transpose(y*np.log(np.maximum(y_hat, np.ones(y_hat.shape)/10**6)) + (1-y)*np.log(np.maximum(1-y_hat, np.ones(y_hat.shape)/10**6)))),
-    _log_loss_derivative
+    _log_loss_derivative,
+    "LogLoss"
 )
 
 
