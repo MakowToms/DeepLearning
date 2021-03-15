@@ -51,14 +51,12 @@ class Plotter:
         # return self
 
     # plot which shows mse or accuracy
-    def plot_measure_results_data(self, measure_function, measure_name, n=None, labels=None, from_error=0, show=True, y_log=False):
+    def plot_measure_results_data(self, measure_function, measure_name, labels=None, from_error=0, show=True, y_log=False):
         errors = []
         for network in self.networks:
             errors.append(measure_function(network))
-        if n is None:
-            n = len(errors[0])
         for index in range(len(errors)):
-            plt.plot([i + 1 for i in range(from_error, n)], errors[index][from_error:], color=self.get_color(index))
+            plt.plot([i + 1 for i in range(from_error, len(errors[index]))], errors[index][from_error:], color=self.get_color(index))
         labels = self._get_labels(labels, default_label_name='network')
         plt.legend(labels=labels)
         plt.title(f'{measure_name} through epochs')
