@@ -27,7 +27,7 @@ names = [("simple", "classification"), ("three_gauss", "classification"),
          ("activation", "regression"), ("cube", "regression")]
 datasets = [Dataset(name, task_type, size) for name, task_type in names for size in sizes]
 
-for dataset in datasets[2:4]:
+for dataset in datasets:
     np.random.seed(123)
     nns = []
     output_activation = softmax if dataset.task_type == "classification" else linear
@@ -66,7 +66,7 @@ for dataset in datasets[2:4]:
 
     # plot error boxplot
     plotter = Plotter(dataset.x_test, dataset.y_test, nns)
-    plt.subplots(error_subplots, 2)
+    plt.subplots(error_subplots, 2, figsize=(6.4, 2.4*error_subplots))
     plt.subplots_adjust(wspace=0.3, hspace=0.6)
     plt.subplot(error_subplots, 2, 1)
     plotter.boxplot_of_errors(layers_error, 2, f'{error_name} train', show=False, labels=[f"size={layer_size}" for layer_size in layer_sizes])
@@ -81,7 +81,7 @@ for dataset in datasets[2:4]:
                 dpi=100, bbox_inches="tight")
 
     # plot errors from last evaluation
-    plt.subplots(error_subplots, 2)
+    plt.subplots(error_subplots, 2, figsize=(6.4, 2.4*error_subplots))
     plt.subplots_adjust(wspace=0.3, hspace=0.6)
     plt.subplot(error_subplots, 2, 1)
     plotter.plot_measure_results_data(NeuralNet.get_MSE_train, f'{error_name} train', show=False)
@@ -98,10 +98,10 @@ for dataset in datasets[2:4]:
     # plot data 1d or 2d
     if dataset.task_type == "classification":
         plt.subplots(1, 3)
-        plt.subplots_adjust(wspace=0.3, hspace=0.5)
+        plt.subplots_adjust(wspace=0.3, hspace=0.5, figsize=(9.6, 2.4))
         for i, size in enumerate(layer_sizes):
             plt.subplot(1, 3, i+1)
-            plotter.plot_data_2d(i, title='Points for 1 layer, size={0}'.format(size), show=False)
+            plotter.plot_data_2d(i, title='1 layer, size={0}'.format(size), show=False)
             plt.savefig("plots/architectures1/{0}_{1}_points.png".format(dataset.name, dataset.size),
                         dpi=100, bbox_inches="tight")
     else:
