@@ -8,6 +8,33 @@ def add_separator(f, condition):
         f.write(" & ")
 
 
+def save_errors_to_latex(errors, labels, metrics, caption, tex_label, filename="temp.txt", shrink=False):
+    with open(filename, "w") as f:
+        f.write("\\begin{table}[h]\n")
+        f.write("\\caption{" + caption + "}\n")
+        f.write("\\label{" + tex_label + "}\n")
+
+        f.write(r"\begin{tabularx}{\textwidth}{ |X|X|X| }")
+        f.write("\n\\hline\n")
+
+        f.write(r"Measure & Activation & Value \\")
+        f.write("\n\\hline\n")
+
+        for met_index, metric in enumerate(metrics):
+            f.write(r"\multirow{{{0}}}*{{{1}}} & ".format(len(labels), metric))
+            for act_index, label in enumerate(labels):
+                if act_index != 0:
+                    f.write(r"& ")
+                f.write(r"{0} & ".format(label))
+                mean = statistics.mean(errors[act_index][met_index])
+                std = statistics.stdev(errors[act_index][met_index])
+                f.write(r"${0:.3f} \pm {1:.3f}$ \\".format(mean, std))
+                f.write("\n")
+            f.write("\\hline\n")
+        f.write("\\end{tabularx}\n")
+        f.write("\\end{table}\n")
+
+
 def save_activation_error_to_latex(activation_error, activations, metrics, filename="temp.txt", shrink=False):
     with open(filename, "w") as f:
         f.write(r"\begin{tabularx}{\textwidth}{ |X|X|X| }")
