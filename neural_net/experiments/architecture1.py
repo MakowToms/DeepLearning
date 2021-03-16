@@ -27,7 +27,7 @@ names = [("simple", "classification"), ("three_gauss", "classification"),
          ("activation", "regression"), ("cube", "regression")]
 datasets = [Dataset(name, task_type, size) for name, task_type in names for size in sizes]
 
-for dataset in datasets[1:2]:
+for dataset in datasets:
     np.random.seed(123)
     nns = []
     output_activation = softmax if dataset.task_type == "classification" else linear
