@@ -27,7 +27,7 @@ names = [("simple", "classification"), ("three_gauss", "classification"),
          ("activation", "regression"), ("cube", "regression")]
 datasets = [Dataset(name, task_type, size) for name, task_type in names for size in sizes]
 
-for dataset in datasets:
+for dataset in datasets[2:]:
     np.random.seed(123)
     nns = []
     output_activation = softmax if dataset.task_type == "classification" else linear
@@ -36,6 +36,7 @@ for dataset in datasets:
     error_name = 'Accuracy' if dataset.task_type == "classification" else 'MSE'
     error_subplots = 2 if dataset.task_type == "classification" else 1
     first_layer_size = 10 if dataset.task_type == "classification" else 50
+    n_epochs = 20 if dataset.name == "three_gauss" else 100
     layer_sizes = [10, 20, 50]
     layers_error = []
     for layer_size in layer_sizes:
@@ -48,7 +49,7 @@ for dataset in datasets:
             .set_optimizer(RMSProp.set_params({"coef": 0.9})) \
             .set_regularization(L1_regularization.set_params({"coef": 0.0001})) \
             .set_loss(loss)
-        nn.budget.set_epoch_limit(100).set_detection_limit(3)
+        nn.budget.set_epoch_limit(n_epochs).set_detection_limit(3)
         n = 10
         errors = [np.empty(n), np.empty(n), np.empty(n), np.empty(n)]
         for i in range(n):
