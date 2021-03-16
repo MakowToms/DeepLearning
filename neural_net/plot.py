@@ -87,9 +87,11 @@ class Plotter:
             plt.show()
         return self
 
-    def boxplot_of_errors(self, errors, index, title, show=True):
+    def boxplot_of_errors(self, errors, index, title, labels=None, show=True):
         plt.boxplot(np.array([errors[i][index] for i in range(len(errors))]).T)
-        plt.xticks(ticks=np.arange(1, len(errors)+1, 1), labels=[nn.name for nn in self.networks])
+        if labels is None:
+            labels = [nn.name for nn in self.networks]
+        plt.xticks(ticks=np.arange(1, len(errors)+1, 1), labels=labels)
         plt.title(title)
         if show:
             plt.show()
