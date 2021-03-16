@@ -40,7 +40,7 @@ for dataset in datasets:
     activations = [tanh, sigmoid, tanh, sigmoid]
     loss_acctivation_error = []
     for loss, activation in zip(losses, activations):
-        nn = NeuralNet(dataset.x_train.shape[1], weight_init=uniform_init, name=f"loss={loss}, {activation}",
+        nn = NeuralNet(dataset.x_train.shape[1], weight_init=uniform_init, name=f"loss={loss.name}, {activation.name}",
                        is_regression=dataset.task_type == "regression") \
             .add_layer(Layer(first_layer_size, activation)) \
             .add_layer(Layer(n_output_neurons, output_activation)) \
@@ -58,7 +58,7 @@ for dataset in datasets:
             errors[3][i] = nn.get_MSE_test()[-1]
         nns.append(nn)
         loss_acctivation_error.append(errors)
-    save_errors_to_latex(loss_acctivation_error, [f"loss={loss}, activation={activation}" for loss, activation in zip(losses, activations)],
+    save_errors_to_latex(loss_acctivation_error, [f"loss={loss.name}, activation={activation.name}" for loss, activation in zip(losses, activations)],
                          ["{0} on train".format(loss.name), "{0} on test".format(loss.name),
                           "{0} on train".format(error_name), "{0} on test".format(error_name)],
                          f"{str.capitalize(dataset.name)} dataset of size {dataset.size}",
@@ -69,17 +69,17 @@ for dataset in datasets:
     # plot error boxplot
     plotter = Plotter(dataset.x_test, dataset.y_test, nns)
     plt.subplots(error_subplots, 2, figsize=(6.4, 2.4*error_subplots))
-    plt.subplots_adjust(wspace=0.3, hspace=0.6)
-    boxplot_labels = [f"{loss}, {activation}" for loss, activation in zip(losses, activations)]
+    plt.subplots_adjust(wspace=0.3, hspace=1.0, bottom=0.3)
+    boxplot_labels = [f"{loss.name}, {activation.name}" for loss, activation in zip(losses, activations)]
     plt.subplot(error_subplots, 2, 1)
-    plotter.boxplot_of_errors(loss_acctivation_error, 2, f'{error_name} train', show=False, labels=boxplot_labels)
+    plotter.boxplot_of_errors(loss_acctivation_error, 2, f'{error_name} train', show=False, labels=boxplot_labels, rotation=30)
     plt.subplot(error_subplots, 2, 2)
-    plotter.boxplot_of_errors(loss_acctivation_error, 3, f'{error_name} test', show=False, labels=boxplot_labels)
+    plotter.boxplot_of_errors(loss_acctivation_error, 3, f'{error_name} test', show=False, labels=boxplot_labels, rotation=30)
     if dataset.task_type == "classification":
         plt.subplot(2, 2, 3)
-        plotter.boxplot_of_errors(loss_acctivation_error, 0, 'Loss train', show=False, labels=boxplot_labels)
+        plotter.boxplot_of_errors(loss_acctivation_error, 0, 'Loss train', show=False, labels=boxplot_labels, rotation=30)
         plt.subplot(2, 2, 4)
-        plotter.boxplot_of_errors(loss_acctivation_error, 1, 'Loss test', show=False, labels=boxplot_labels)
+        plotter.boxplot_of_errors(loss_acctivation_error, 1, 'Loss test', show=False, labels=boxplot_labels, rotation=30)
     plt.savefig("plots/loss/{0}_{1}_loss_boxplot.png".format(dataset.name, dataset.size),
                 dpi=100, bbox_inches="tight")
 
@@ -102,9 +102,9 @@ for dataset in datasets:
     if dataset.task_type == "classification":
         plt.subplots(2, 2, figsize=(6.4, 4.8))
         plt.subplots_adjust(wspace=0.3, hspace=0.5)
-        for i, loss, activation in enumerate(zip(losses, activations)):
+        for i, loss, activation in zip([0, 1, 2, 3], losses, activations):
             plt.subplot(2, 2, i+1)
-            plotter.plot_data_2d(i, title=f"loss={loss}, activation={activation}", show=False)
+            plotter.plot_data_2d(i, title=f"loss={loss.name}, activation={activation.name}", show=False)
             plt.savefig("plots/loss/{0}_{1}_points.png".format(dataset.name, dataset.size),
                         dpi=100, bbox_inches="tight")
     else:
