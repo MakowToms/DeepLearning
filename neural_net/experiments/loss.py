@@ -33,14 +33,13 @@ for dataset in datasets:
     output_activation = softmax if dataset.task_type == "classification" else linear
     n_output_neurons = dataset.y_train.shape[1] if dataset.task_type == "classification" else 1
     error_name = 'Accuracy' if dataset.task_type == "classification" else 'MSE'
-    error_subplots = 2 if dataset.task_type == "classification" else 1
     first_layer_size = 10 if dataset.task_type == "classification" else 50
     n_epochs = 20 if dataset.name == "three_gauss" else 100
     losses = [hinge, hinge, LogLoss, LogLoss] if dataset.task_type == "classification" else [MSE, MSE, MAE, MAE]
     activations = [tanh, sigmoid, tanh, sigmoid]
     loss_acctivation_error = []
     for loss, activation in zip(losses, activations):
-        nn = NeuralNet(dataset.x_train.shape[1], weight_init=uniform_init, name=f"loss={loss.name}, {activation.name}",
+        nn = NeuralNet(dataset.x_train.shape[1], weight_init=uniform_init, name=f"{loss.name}, {activation.name}",
                        is_regression=dataset.task_type == "regression") \
             .add_layer(Layer(first_layer_size, activation)) \
             .add_layer(Layer(n_output_neurons, output_activation)) \
@@ -68,33 +67,31 @@ for dataset in datasets:
 
     # plot error boxplot
     plotter = Plotter(dataset.x_test, dataset.y_test, nns)
-    plt.subplots(error_subplots, 2, figsize=(6.4, 2.4*error_subplots))
-    plt.subplots_adjust(wspace=0.3, hspace=1.0, bottom=0.3)
+    plt.subplots(2, 2, figsize=(6.4, 4.8))
+    plt.subplots_adjust(wspace=0.3, hspace=1.1, bottom=0.3)
     boxplot_labels = [f"{loss.name}, {activation.name}" for loss, activation in zip(losses, activations)]
-    plt.subplot(error_subplots, 2, 1)
+    plt.subplot(2, 2, 1)
     plotter.boxplot_of_errors(loss_acctivation_error, 2, f'{error_name} train', show=False, labels=boxplot_labels, rotation=30)
-    plt.subplot(error_subplots, 2, 2)
+    plt.subplot(2, 2, 2)
     plotter.boxplot_of_errors(loss_acctivation_error, 3, f'{error_name} test', show=False, labels=boxplot_labels, rotation=30)
-    if dataset.task_type == "classification":
-        plt.subplot(2, 2, 3)
-        plotter.boxplot_of_errors(loss_acctivation_error, 0, 'Loss train', show=False, labels=boxplot_labels, rotation=30)
-        plt.subplot(2, 2, 4)
-        plotter.boxplot_of_errors(loss_acctivation_error, 1, 'Loss test', show=False, labels=boxplot_labels, rotation=30)
+    plt.subplot(2, 2, 3)
+    plotter.boxplot_of_errors(loss_acctivation_error, 0, 'Loss train', show=False, labels=boxplot_labels, rotation=30)
+    plt.subplot(2, 2, 4)
+    plotter.boxplot_of_errors(loss_acctivation_error, 1, 'Loss test', show=False, labels=boxplot_labels, rotation=30)
     plt.savefig("plots/loss/{0}_{1}_loss_boxplot.png".format(dataset.name, dataset.size),
                 dpi=100, bbox_inches="tight")
 
     # plot errors from last evaluation
-    plt.subplots(error_subplots, 2, figsize=(6.4, 2.4*error_subplots))
+    plt.subplots(2, 2, figsize=(6.4, 4.8))
     plt.subplots_adjust(wspace=0.3, hspace=0.6)
-    plt.subplot(error_subplots, 2, 1)
+    plt.subplot(2, 2, 1)
     plotter.plot_measure_results_data(NeuralNet.get_MSE_train, f'{error_name} train', show=False)
-    plt.subplot(error_subplots, 2, 2)
+    plt.subplot(2, 2, 2)
     plotter.plot_measure_results_data(NeuralNet.get_MSE_test, f'{error_name} test', show=False)
-    if dataset.task_type == "classification":
-        plt.subplot(2, 2, 3)
-        plotter.plot_measure_results_data(NeuralNet.get_loss_train, 'Loss train', show=False)
-        plt.subplot(2, 2, 4)
-        plotter.plot_measure_results_data(NeuralNet.get_loss_test, 'Loss test', show=False)
+    plt.subplot(2, 2, 3)
+    plotter.plot_measure_results_data(NeuralNet.get_loss_train, 'Loss train', show=False)
+    plt.subplot(2, 2, 4)
+    plotter.plot_measure_results_data(NeuralNet.get_loss_test, 'Loss test', show=False)
     plt.savefig("plots/loss/{0}_{1}_loss_history.png".format(dataset.name, dataset.size),
                 dpi=100, bbox_inches="tight")
 
