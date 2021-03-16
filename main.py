@@ -31,7 +31,7 @@ x_train, y_train = x_y_split_by_index(train, -1)
 test = pd.read_csv('datasets/neural_net/regression/data.cube.test.100.csv')
 x_test, y_test = x_y_split_by_index(test, -1)
 
-nn = NeuralNet(1, weight_init=uniform_init, plot_weights_=True)\
+nn = NeuralNet(1, weight_init=uniform_init, visualize=True)\
     .add_layer(Layer(10, sigmoid))\
     .add_layer(Layer(15, sigmoid))\
     .add_layer(Layer(10, sigmoid))\
