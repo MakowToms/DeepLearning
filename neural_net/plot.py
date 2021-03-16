@@ -87,11 +87,12 @@ class Plotter:
             plt.show()
         return self
 
-    def boxplot_of_errors(self, errors, index, title, labels=None, show=True):
+    def boxplot_of_errors(self, errors, index, title, labels=None, show=True, rotation=0):
         plt.boxplot(np.array([errors[i][index] for i in range(len(errors))]).T)
         if labels is None:
             labels = [nn.name for nn in self.networks]
-        plt.xticks(ticks=np.arange(1, len(errors)+1, 1), labels=labels)
+        ax = plt.gca()
+        ax.set_xticklabels(labels=labels, rotation=rotation)
         plt.title(title)
         if show:
             plt.show()
