@@ -27,7 +27,7 @@ names = [("simple", "classification"), ("three_gauss", "classification"),
          ("activation", "regression"), ("cube", "regression")]
 datasets = [Dataset(name, task_type, size) for name, task_type in names for size in sizes]
 
-for dataset in datasets:
+for dataset in datasets[1:2]:
     np.random.seed(123)
     nns = []
     output_activation = softmax if dataset.task_type == "classification" else linear
@@ -97,8 +97,8 @@ for dataset in datasets:
 
     # plot data 1d or 2d
     if dataset.task_type == "classification":
-        plt.subplots(1, 3)
-        plt.subplots_adjust(wspace=0.3, hspace=0.5, figsize=(9.6, 2.4))
+        plt.subplots(1, 3, figsize=(9.6, 2.4))
+        plt.subplots_adjust(wspace=0.3, hspace=0.5)
         for i, size in enumerate(layer_sizes):
             plt.subplot(1, 3, i+1)
             plotter.plot_data_2d(i, title='1 layer, size={0}'.format(size), show=False)
