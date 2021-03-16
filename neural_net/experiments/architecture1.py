@@ -34,6 +34,7 @@ for dataset in datasets[2:4]:
     n_output_neurons = dataset.y_train.shape[1] if dataset.task_type == "classification" else 1
     loss = hinge if dataset.task_type == "classification" else MSE
     error_name = 'Accuracy' if dataset.task_type == "classification" else 'MSE'
+    error_subplots = 2 if dataset.task_type == "classification" else 1
     layer_sizes = [10, 20, 50]
     layers_error = []
     for layer_size in layer_sizes:
@@ -57,7 +58,7 @@ for dataset in datasets[2:4]:
         layers_error.append(errors)
     save_errors_to_latex(layers_error, [f"1 layer, size {layer_size}" for layer_size in layer_sizes],
                          ["{0} on train".format(loss.name), "{0} on test".format(loss.name),
-                         "{0} on train".format(error_name), "{0} on test".format(error_name)],
+                          "{0} on train".format(error_name), "{0} on test".format(error_name)],
                          f"{str.capitalize(dataset.name)} dataset of size {dataset.size}",
                          f"tab:architecture1:{dataset.name}_{dataset.size}",
                          "tables/architectures1/{0}_{1}.txt".format(dataset.name, dataset.size),
@@ -65,39 +66,41 @@ for dataset in datasets[2:4]:
 
     # plot error boxplot
     plotter = Plotter(dataset.x_test, dataset.y_test, nns)
-    plt.subplots(2, 2)
+    plt.subplots(error_subplots, 2)
     plt.subplots_adjust(wspace=0.3, hspace=0.6)
-    plt.subplot(2, 2, 1)
-    plotter.boxplot_of_errors(layers_error, 0, 'Loss train', show=False, labels=[f"size={layer_size}" for layer_size in layer_sizes])
-    plt.subplot(2, 2, 2)
-    plotter.boxplot_of_errors(layers_error, 1, 'Loss test', show=False, labels=[f"size={layer_size}" for layer_size in layer_sizes])
-    plt.subplot(2, 2, 3)
+    plt.subplot(error_subplots, 2, 1)
     plotter.boxplot_of_errors(layers_error, 2, f'{error_name} train', show=False, labels=[f"size={layer_size}" for layer_size in layer_sizes])
-    plt.subplot(2, 2, 4)
+    plt.subplot(error_subplots, 2, 2)
     plotter.boxplot_of_errors(layers_error, 3, f'{error_name} test', show=False, labels=[f"size={layer_size}" for layer_size in layer_sizes])
+    if dataset.task_type == "classification":
+        plt.subplot(2, 2, 3)
+        plotter.boxplot_of_errors(layers_error, 0, 'Loss train', show=False, labels=[f"size={layer_size}" for layer_size in layer_sizes])
+        plt.subplot(2, 2, 4)
+        plotter.boxplot_of_errors(layers_error, 1, 'Loss test', show=False, labels=[f"size={layer_size}" for layer_size in layer_sizes])
     plt.savefig("plots/architectures1/{0}_{1}_loss_boxplot.png".format(dataset.name, dataset.size),
                 dpi=100, bbox_inches="tight")
 
     # plot errors from last evaluation
-    plt.subplots(2, 2)
+    plt.subplots(error_subplots, 2)
     plt.subplots_adjust(wspace=0.3, hspace=0.6)
-    plt.subplot(2, 2, 1)
-    plotter.plot_measure_results_data(NeuralNet.get_loss_test, 'Loss test', show=False)
-    plt.subplot(2, 2, 2)
-    plotter.plot_measure_results_data(NeuralNet.get_loss_train, 'Loss train', show=False)
-    plt.subplot(2, 2, 3)
-    plotter.plot_measure_results_data(NeuralNet.get_MSE_test, f'{error_name} test', show=False)
-    plt.subplot(2, 2, 4)
+    plt.subplot(error_subplots, 2, 1)
     plotter.plot_measure_results_data(NeuralNet.get_MSE_train, f'{error_name} train', show=False)
+    plt.subplot(error_subplots, 2, 2)
+    plotter.plot_measure_results_data(NeuralNet.get_MSE_test, f'{error_name} test', show=False)
+    if dataset.task_type == "classification":
+        plt.subplot(2, 2, 3)
+        plotter.plot_measure_results_data(NeuralNet.get_loss_train, 'Loss train', show=False)
+        plt.subplot(2, 2, 4)
+        plotter.plot_measure_results_data(NeuralNet.get_loss_test, 'Loss test', show=False)
     plt.savefig("plots/architectures1/{0}_{1}_loss_history.png".format(dataset.name, dataset.size),
                 dpi=100, bbox_inches="tight")
 
     # plot data 1d or 2d
     if dataset.task_type == "classification":
-        plt.subplots(2, 2)
+        plt.subplots(1, 3)
         plt.subplots_adjust(wspace=0.3, hspace=0.5)
         for i, size in enumerate(layer_sizes):
-            plt.subplot(2, 2, i+1)
+            plt.subplot(1, 3, i+1)
             plotter.plot_data_2d(i, title='Points for 1 layer, size={0}'.format(size), show=False)
             plt.savefig("plots/architectures1/{0}_{1}_points.png".format(dataset.name, dataset.size),
                         dpi=100, bbox_inches="tight")
