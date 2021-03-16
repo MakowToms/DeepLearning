@@ -60,7 +60,7 @@ for dataset in datasets:
             errors[3][i] = nn.get_MSE_test()[-1]
         nns.append(nn)
         layers_error.append(errors)
-    save_errors_to_latex(layers_error, [f"layers: {first_layer_size}, {layer_size}" for layer_size in layer_sizes],
+    save_errors_to_latex(layers_error, [f"layers: {first_layer_size}, {first_layer_size}, {layer_size}" for layer_size in layer_sizes],
                          ["{0} on train".format(loss.name), "{0} on test".format(loss.name),
                           "{0} on train".format(error_name), "{0} on test".format(error_name)],
                          f"{str.capitalize(dataset.name)} dataset of size {dataset.size}",
