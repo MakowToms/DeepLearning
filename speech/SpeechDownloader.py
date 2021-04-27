@@ -15,7 +15,7 @@ import numpy as np
 import librosa
 import pandas as pd
 
-from speech import audioUtils
+import audioUtils
 
 
 # ##################
