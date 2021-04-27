@@ -1,5 +1,6 @@
 """
 Source: https://github.com/douglas125/SpeechCmdRecognition
+to be honest -> ugly code that don't use python convencion
 
 File containing scripts to download audio from various datasets
 
@@ -55,7 +56,7 @@ GSCmdV2Categs = {
 numGSCmdV2Categs = 21
 
 
-def PrepareGoogleSpeechCmd(task='20cmd', version=0, forceDownload=False):
+def PrepareGoogleSpeechCmd(task='20cmd', version=0, forceDownload=False, drive_directory=''):
     """
     Prepares Google Speech commands dataset version 2 for use
 
@@ -79,6 +80,7 @@ def PrepareGoogleSpeechCmd(task='20cmd', version=0, forceDownload=False):
         basePath = 'speech_data'
     else:
         raise Exception('Version must be 0, 1 or 2')
+    basePath = drive_directory + basePath
 
     if task == '12cmd':
         GSCmdV2Categs = {
