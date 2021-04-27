@@ -5,6 +5,7 @@ File containing scripts to download audio from various datasets
 
 Also has tools to convert audio into numpy
 """
+
 from tqdm import tqdm
 import requests
 import math
@@ -14,7 +15,7 @@ import numpy as np
 import librosa
 import pandas as pd
 
-import audioUtils
+from speech import audioUtils
 
 
 # ##################
@@ -24,9 +25,6 @@ import audioUtils
 # GSCmdV2Categs = {'unknown' : 0, 'silence' : 1, '_unknown_' : 0,'_silence_' : 1, '_background_noise_' : 1, 'yes' : 2,
 #                 'no' : 3, 'up' : 4, 'down' : 5, 'left' : 6, 'right' : 7, 'on' : 8, 'off' : 9, 'stop' : 10, 'go' : 11}
 # numGSCmdV2Categs = 12
-
-# "Yes", "No", "Up", "Down", "Left", "Right", "On", "Off", "Stop", "Go", "Zero",
-# "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", and "Nine"
 
 GSCmdV2Categs = {
     'unknown': 0,
@@ -57,7 +55,7 @@ GSCmdV2Categs = {
 numGSCmdV2Categs = 21
 
 
-def PrepareGoogleSpeechCmd(version=2, forceDownload=False, task='20cmd'):
+def PrepareGoogleSpeechCmd(task='20cmd', version=0, forceDownload=False):
     """
     Prepares Google Speech commands dataset version 2 for use
 
@@ -76,8 +74,11 @@ def PrepareGoogleSpeechCmd(version=2, forceDownload=False, task='20cmd'):
     elif version == 1:
         _DownloadGoogleSpeechCmdV1(forceDownload)
         basePath = 'sd_GSCmdV1'
+    elif version == 0:
+        # in that case it assumes that data are downloaded manually from kaggle and unpacked in folders train and test
+        basePath = 'speech_data'
     else:
-        raise Exception('Version must be 1 or 2')
+        raise Exception('Version must be 0, 1 or 2')
 
     if task == '12cmd':
         GSCmdV2Categs = {
@@ -153,10 +154,10 @@ def PrepareGoogleSpeechCmd(version=2, forceDownload=False, task='20cmd'):
     elif task == '20cmd':
         GSCmdV2Categs = {
             'unknown': 0,
-            'silence': 0,
+            'silence': 1,
             '_unknown_': 0,
-            '_silence_': 0,
-            '_background_noise_': 0,
+            '_silence_': 1,
+            '_background_noise_': 1,
             'yes': 2,
             'no': 3,
             'up': 4,
@@ -176,13 +177,13 @@ def PrepareGoogleSpeechCmd(version=2, forceDownload=False, task='20cmd'):
             'six': 18,
             'seven': 19,
             'eight': 20,
-            'nine': 1}
+            'nine': 21}
         numGSCmdV2Categs = 21
 
-    print('Converting test set WAVs to numpy files')
-    audioUtils.WAV2Numpy(basePath + '/test/')
-    print('Converting training set WAVs to numpy files')
-    audioUtils.WAV2Numpy(basePath + '/train/')
+    # print('Converting test set WAVs to numpy files')
+    # audioUtils.WAV2Numpy(basePath + '/test/')
+    # print('Converting training set WAVs to numpy files')
+    # audioUtils.WAV2Numpy(basePath + '/train/')
 
     # read split from files and all files in folders
     testWAVs = pd.read_csv(basePath + '/train/testing_list.txt',
@@ -216,7 +217,7 @@ def PrepareGoogleSpeechCmd(version=2, forceDownload=False, task='20cmd'):
                       if trainWAVlabels[i] == GSCmdV2Categs['silence']]
     backNoiseCats = [GSCmdV2Categs['silence']
                      for i in range(len(backNoiseFiles))]
-    if numGSCmdV2Categs == 12:
+    if numGSCmdV2Categs == 12 or numGSCmdV2Categs == 22:
         valWAVs += backNoiseFiles
         valWAVlabels += backNoiseCats
 
