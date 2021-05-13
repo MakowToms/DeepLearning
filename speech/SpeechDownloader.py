@@ -29,10 +29,10 @@ import audioUtils
 
 GSCmdV2Categs = {
     'unknown': 0,
-    'silence': 0,
+    'silence': 1,
     '_unknown_': 0,
-    '_silence_': 0,
-    '_background_noise_': 0,
+    '_silence_': 1,
+    '_background_noise_': 1,
     'yes': 2,
     'no': 3,
     'up': 4,
@@ -52,8 +52,8 @@ GSCmdV2Categs = {
     'six': 18,
     'seven': 19,
     'eight': 20,
-    'nine': 1}
-numGSCmdV2Categs = 21
+    'nine': 21}
+numGSCmdV2Categs = 22
 
 
 def PrepareGoogleSpeechCmd(task='20cmd', version=0, forceDownload=False, drive_directory=''):
@@ -180,7 +180,7 @@ def PrepareGoogleSpeechCmd(task='20cmd', version=0, forceDownload=False, drive_d
             'seven': 19,
             'eight': 20,
             'nine': 21}
-        numGSCmdV2Categs = 21
+        numGSCmdV2Categs = 22
 
     # print('Converting test set WAVs to numpy files')
     # audioUtils.WAV2Numpy(basePath + '/test/')
