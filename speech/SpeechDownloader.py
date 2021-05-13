@@ -193,9 +193,9 @@ def PrepareGoogleSpeechCmd(task='20cmd', version=0, forceDownload=False, drive_d
     valWAVs = pd.read_csv(basePath + '/train/validation_list.txt',
                           sep=" ", header=None)[0].tolist()
 
-    testWAVs = [os.path.join(basePath + '/train/', f + '.npy')
+    testWAVs = [os.path.join(basePath + '/train/audio/', f + '.npy')
                 for f in testWAVs if f.endswith('.wav')]
-    valWAVs = [os.path.join(basePath + '/train/', f + '.npy')
+    valWAVs = [os.path.join(basePath + '/train/audio/', f + '.npy')
                for f in valWAVs if f.endswith('.wav')]
     allWAVs = []
     for root, dirs, files in os.walk(basePath + '/train/'):
