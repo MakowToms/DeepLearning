@@ -227,7 +227,7 @@ def PrepareGoogleSpeechCmd(task='20cmd', version=0, forceDownload=False, drive_d
                       if trainWAVlabels[i] == GSCmdV2Categs['silence']]
     backNoiseCats = [GSCmdV2Categs['silence']
                      for i in range(len(backNoiseFiles))]
-    if numGSCmdV2Categs == 12 or numGSCmdV2Categs == 22:
+    if numGSCmdV2Categs == 2 or numGSCmdV2Categs == 12 or numGSCmdV2Categs == 22:
         valWAVs += backNoiseFiles
         valWAVlabels += backNoiseCats
 
