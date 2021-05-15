@@ -81,7 +81,15 @@ def PrepareGoogleSpeechCmd(task='20cmd', version=0, forceDownload=False, drive_d
     else:
         raise Exception('Version must be 0, 1 or 2')
     basePath = drive_directory + basePath
-
+    
+    if task == 'silence':
+        GSCmdV2Categs = {
+            'unknown': 0,
+            'silence': 1,
+            '_unknown_': 0,
+            '_silence_': 1,
+            '_background_noise_': 1}
+        numGSCmdV2Categs = 2
     if task == '12cmd':
         GSCmdV2Categs = {
             'unknown': 0,
