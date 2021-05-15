@@ -15,7 +15,7 @@ from kapre.time_frequency import Melspectrogram, Spectrogram
 from kapre.utils import Normalization2D
 
 
-def ConvSpeechModel(nCategories, samplingrate=16000, inputLength=16000):
+def ConvSpeechModel(nCategories, samplingrate=16000, inputLength=16000, more_blocks=False, bigger_blocks=False, blocks_layers=[20, 40, 80, 160, 320]):
     """
     Base fully convolutional model for speech recognition
     """
@@ -39,20 +39,35 @@ def ConvSpeechModel(nCategories, samplingrate=16000, inputLength=16000):
     # x = Reshape((94,80)) (x) #this is strange - but now we have (batch_size,
     # sequence, vec_dim)
 
-    c1 = L.Conv2D(20, (5, 1), activation='relu', padding='same')(x)
+    c1 = L.Conv2D(blocks_layers[0], (5, 1), activation='relu', padding='same')(x)
     c1 = L.BatchNormalization()(c1)
     p1 = L.MaxPooling2D((2, 1))(c1)
     p1 = L.Dropout(0.2)(p1)
 
-    c2 = L.Conv2D(40, (3, 3), activation='relu', padding='same')(p1)
+    c2 = L.Conv2D(blocks_layers[1], (3, 3), activation='relu', padding='same')(p1)
     c2 = L.BatchNormalization()(c2)
+    if bigger_blocks:
+        c2 = L.Conv2D(blocks_layers[1], (3, 3), activation='relu', padding='same')(c2)
+        c2 = L.BatchNormalization()(c2)
     p2 = L.MaxPooling2D((2, 2))(c2)
     p2 = L.Dropout(0.3)(p2)
 
-    c3 = L.Conv2D(80, (3, 3), activation='relu', padding='same')(p2)
+    c3 = L.Conv2D(blocks_layers[2], (3, 3), activation='relu', padding='same')(p2)
     c3 = L.BatchNormalization()(c3)
+    if bigger_blocks:
+        c3 = L.Conv2D(blocks_layers[2], (3, 3), activation='relu', padding='same')(c3)
+        c3 = L.BatchNormalization()(c3)
     p3 = L.MaxPooling2D((2, 2))(c3)
 #     p3 = L.Dropout(0.3)(p3)
+
+    if more_blocks:
+        p3 = L.Dropout(0.3)(p3)
+        c3 = L.Conv2D(blocks_layers[3], (3, 3), activation='relu', padding='same')(p3)
+        c3 = L.BatchNormalization()(c3)
+        if bigger_blocks:
+            c3 = L.Conv2D(blocks_layers[3], (3, 3), activation='relu', padding='same')(c3)
+            c3 = L.BatchNormalization()(c3)
+        p3 = L.MaxPooling2D((2, 2))(c3)
 
     p3 = L.Flatten()(p3)
     p3 = L.Dense(64, activation='relu')(p3)
