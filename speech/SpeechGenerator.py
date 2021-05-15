@@ -28,7 +28,7 @@ class SpeechGen(tensorflow.keras.utils.Sequence):
 
     Expects list_IDs and labels to be of the same length
     """
-    def __init__(self, list_IDs, labels, batch_size=32,
+    def __init__(self, list_IDs, labels, dataset_type, batch_size=32,
                  dim=16000, shuffle=True):
         'Initialization'
         self.dim = dim
@@ -83,7 +83,15 @@ class SpeechGen(tensorflow.keras.utils.Sequence):
                 X[i] = curX
             elif curX.shape[0] > self.dim:  # bigger
                 # we can choose any position in curX-self.dim
-                randPos = np.random.randint(curX.shape[0]-self.dim)
+                if self.labels[ID] == 1:
+                    if dataset_type == 'train':
+                        randPos = np.random.randint(int((curX.shape[0]-self.dim)*3/5))
+                    if dataset_type == 'val':
+                        randPos = np.random.randint(int((curX.shape[0]-self.dim)*3/5), int((curX.shape[0]-self.dim)*4/5))
+                    if dataset_type == 'test':
+                        randPos = np.random.randint(int((curX.shape[0]-self.dim)*4/5), curX.shape[0]-self.dim)
+                else:
+                    randPos = np.random.randint(curX.shape[0]-self.dim)
                 X[i] = curX[randPos:randPos+self.dim]
             else:  # smaller
                 randPos = np.random.randint(self.dim-curX.shape[0])
