@@ -64,7 +64,7 @@ def PrepareGoogleSpeechCmd(task='20cmd', version=0, forceDownload=False, drive_d
 
     Returns full path to training, validation and test file list and file categories
     """
-    allowedTasks = ['12cmd', 'leftright', '35word', '20cmd']
+    allowedTasks = ['silence', '12cmd', 'leftright', '35word', '20cmd']
     if task not in allowedTasks:
         raise Exception('Task must be one of: {}'.format(allowedTasks))
 
