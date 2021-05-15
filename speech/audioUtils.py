@@ -9,6 +9,7 @@ from tqdm import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
+from scipy.signal import butter, filtfilt
 
 
 def plot_confusion_matrix(cm, classes,
@@ -46,7 +47,28 @@ def plot_confusion_matrix(cm, classes,
     plt.tight_layout()
 
 
-def WAV2Numpy(folder, sr=None):
+"""
+Source: https://towardsdatascience.com/audio-onset-detection-data-preparation-for-a-baseball-application-using-librosa-7f9735430c17
+"""
+def butter_highpass(data, cutoff, fs, order=5):
+   """
+   Design a highpass filter.
+   Args:
+   - cutoff (float) : the cutoff frequency of the filter.
+   - fs     (float) : the sampling rate.
+   - order    (int) : order of the filter, by default defined to 5.
+   """
+   # calculate the Nyquist frequency
+   nyq = 0.5 * fs
+   # design filter
+   high = cutoff / nyq
+   b, a = butter(order, high, btype='high', analog=False)
+   # returns the filter coefficients: numerator and denominator
+   y = filtfilt(b, a, data)
+   return y
+
+
+def WAV2Numpy(folder, sr=None, top_db=30, cutoff=1000):
     """
     Recursively converts WAV to numpy arrays.
     Deletes the WAV files in the process
@@ -60,6 +82,8 @@ def WAV2Numpy(folder, sr=None):
 
     for file in tqdm(allFiles):
         y, sr = librosa.load(file, sr=None)
+        y = butter_highpass(y, cutoff, sr, order=5)
+        y = librosa.effects.trim(y, top_db)
 
         # if we want to write the file later
         # librosa.output.write_wav('file.wav', y, sr, norm=False)
