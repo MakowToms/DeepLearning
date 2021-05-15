@@ -34,6 +34,7 @@ class SpeechGen(tensorflow.keras.utils.Sequence):
         self.dim = dim
         self.batch_size = batch_size
         self.labels = labels
+        self.dataset_type = dataset_type
         self.list_IDs = list_IDs
         self.shuffle = shuffle
         self.on_epoch_end()
@@ -84,11 +85,11 @@ class SpeechGen(tensorflow.keras.utils.Sequence):
             elif curX.shape[0] > self.dim:  # bigger
                 # we can choose any position in curX-self.dim
                 if self.labels[ID] == 1:
-                    if dataset_type == 'train':
+                    if self.dataset_type == 'train':
                         randPos = np.random.randint(int((curX.shape[0]-self.dim)*3/5))
-                    if dataset_type == 'val':
+                    if self.dataset_type == 'val':
                         randPos = np.random.randint(int((curX.shape[0]-self.dim)*3/5), int((curX.shape[0]-self.dim)*4/5))
-                    if dataset_type == 'test':
+                    if self.dataset_type == 'test':
                         randPos = np.random.randint(int((curX.shape[0]-self.dim)*4/5), curX.shape[0]-self.dim)
                 else:
                     randPos = np.random.randint(curX.shape[0]-self.dim)
