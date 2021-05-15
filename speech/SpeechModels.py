@@ -42,21 +42,21 @@ def ConvSpeechModel(nCategories, samplingrate=16000, inputLength=16000):
     c1 = L.Conv2D(20, (5, 1), activation='relu', padding='same')(x)
     c1 = L.BatchNormalization()(c1)
     p1 = L.MaxPooling2D((2, 1))(c1)
-    p1 = L.Dropout(0.2)(p1)
+    p1 = L.Dropout(0.1)(p1)
 
     c2 = L.Conv2D(40, (3, 3), activation='relu', padding='same')(p1)
     c2 = L.BatchNormalization()(c2)
     p2 = L.MaxPooling2D((2, 2))(c2)
-    p2 = L.Dropout(0.3)(p2)
+    p2 = L.Dropout(0.2)(p2)
 
     c3 = L.Conv2D(80, (3, 3), activation='relu', padding='same')(p2)
     c3 = L.BatchNormalization()(c3)
     p3 = L.MaxPooling2D((2, 2))(c3)
-    p3 = L.Dropout(0.4)(p3)
+    p3 = L.Dropout(0.3)(p3)
 
     p3 = L.Flatten()(p3)
     p3 = L.Dense(64, activation='relu')(p3)
-    p3 = L.Dropout(0.5)(p3)
+    p3 = L.Dropout(0.4)(p3)
 
     output = L.Dense(nCategories, activation='softmax')(p3)
 
