@@ -230,6 +230,9 @@ def PrepareGoogleSpeechCmd(task='20cmd', version=0, forceDownload=False, drive_d
     if numGSCmdV2Categs == 2 or numGSCmdV2Categs == 12 or numGSCmdV2Categs == 22:
         valWAVs += backNoiseFiles
         valWAVlabels += backNoiseCats
+        testWAVs += backNoiseFiles
+        testWAVlabels += backNoiseCats
+
 
     # build dictionaries
     testWAVlabelsDict = dict(zip(testWAVs, testWAVlabels))
