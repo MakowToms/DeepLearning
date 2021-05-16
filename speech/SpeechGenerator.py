@@ -96,7 +96,7 @@ class SpeechGen(tensorflow.keras.utils.Sequence):
                 np.random.shuffle(self.indexes)
         else:
             n_not_unknown = self.n - self.n_in_one_class
-            self.indexes = np.zeros([self.n])
+            self.indexes = np.zeros([self.n], dtype=np.intp)
             self.indexes[:n_not_unknown] = np.arange(n_not_unknown)
             self.indexes[n_not_unknown:] = np.random.choice(np.arange(n_not_unknown, len(self.list_IDs)), self.n_in_one_class, replace=False)
             if self.shuffle:
