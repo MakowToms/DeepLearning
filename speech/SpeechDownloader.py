@@ -246,14 +246,14 @@ def PrepareGoogleSpeechCmd(task='20cmd', version=0, forceDownload=False, drive_d
     # need to do it again
 
     # add proportionally many silence files
-    for i in range(int(len(trainWAVs)/6/(numGSCmdV2Categs-1))):
-        trainWAVs = trainWAVs + backNoiseFiles
+#     for i in range(int(len(trainWAVs)/6/(numGSCmdV2Categs-1))):
+#         trainWAVs = trainWAVs + backNoiseFiles
 
-    for i in range(int(len(valWAVs)/6/(numGSCmdV2Categs-1))):
-        valWAVs = valWAVs + backNoiseFiles
+#     for i in range(int(len(valWAVs)/6/(numGSCmdV2Categs-1))):
+#         valWAVs = valWAVs + backNoiseFiles
     
-    for i in range(int(len(testWAVs)/6/(numGSCmdV2Categs-1))):
-        testWAVs = testWAVs + backNoiseFiles
+#     for i in range(int(len(testWAVs)/6/(numGSCmdV2Categs-1))):
+#         testWAVs = testWAVs + backNoiseFiles
 
     # info dictionary
     trainInfo = {'files': trainWAVs, 'labels': trainWAVlabelsDict}
