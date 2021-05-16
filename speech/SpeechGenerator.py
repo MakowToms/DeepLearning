@@ -15,6 +15,7 @@ model.fit_generator(generator=training_generator,
 """
 
 import numpy as np
+import pandas as pd
 import tensorflow.keras
 
 
