@@ -37,11 +37,42 @@ class SpeechGen(tensorflow.keras.utils.Sequence):
         self.dataset_type = dataset_type
         self.list_IDs = list_IDs
         self.shuffle = shuffle
+        
+        labels_df = pd.DataFrame(self.labels.items())
+        counts = labels_df.groupby(1).count()[0]
+        n_unknown = counts[0]
+        self.n_in_one_class = None
+        if counts.index.shape[0] == 1:
+            # it's real test dataset - don't have to do anything with preparation
+            pass
+        else:
+            unknown_labels = list(labels_df[labels_df.iloc[:, 1] == 0].iloc[:, 0])
+            silence_labels = list(labels_df[labels_df.iloc[:, 1] == 1].iloc[:, 0])
+            n_silence = counts[1]
+            n_rest = counts.sum() - n_unknown - n_silence
+            if n_rest == 0:
+                # it's only silence task
+                # balance silence and unknown
+                self.list_IDs += silence_labels * int(len(unknown_labels)/6)
+            else:
+                # it's some of other datasets
+                self.n_in_one_class = int(n_rest / counts.shape)
+                # balance silence and other
+                self.list_IDs += silence_labels * int(n_in_one_class/6)
+                IDs_not_unknown = [ID for ID in self.list_IDs if not unknown_labels.__contains__(ID)]
+                IDs_unknown = [ID for ID in self.list_IDs if unknown_labels.__contains__(ID)]
+                assert len(self.list_IDs) == len(IDs_not_unknown) + len(IDs_unknown)
+                self.list_IDs = IDs_not_unknown + IDs_unknown
+                self.n = len(IDs_not_unknown) + self.n_in_one_class
+        
         self.on_epoch_end()
 
     def __len__(self):
         'Denotes the number of batches per epoch'
-        return int(np.floor(len(self.list_IDs) / self.batch_size))
+        if self.n_in_one_class is None:
+            return int(np.floor(len(self.list_IDs) / self.batch_size))
+        else:
+            return int(np.floor(self.n / self.batch_size))
 
     def __getitem__(self, index):
         'Generate one batch of data'
@@ -58,9 +89,18 @@ class SpeechGen(tensorflow.keras.utils.Sequence):
 
     def on_epoch_end(self):
         'Updates indexes after each epoch'
-        self.indexes = np.arange(len(self.list_IDs))
-        if self.shuffle:
-            np.random.shuffle(self.indexes)
+        if self.n_in_one_class is None: 
+            self.indexes = np.arange(len(self.list_IDs))
+            if self.shuffle:
+                np.random.shuffle(self.indexes)
+        else:
+            n_not_unknown = self.n - self.n_in_one_class
+            self.indexes = np.zeros([self.n])
+            self.indexes[:n_not_unknown] = np.arange(n_not_unknown)
+            self.indexes[n_not_unknown:] = np.random.choice(np.arange(n_not_unknown, len(self.list_IDs)), self.n_in_one_class, replace=False)
+            if self.shuffle:
+                np.random.shuffle(self.indexes)
+
 
     def __data_generation(self, list_IDs_temp):
         'Generates data containing batch_size samples'
