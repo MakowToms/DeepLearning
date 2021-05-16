@@ -59,7 +59,7 @@ class SpeechGen(tensorflow.keras.utils.Sequence):
                 # it's some of other datasets
                 self.n_in_one_class = int(n_rest / counts.shape)
                 # balance silence and other
-                self.list_IDs += silence_labels * int(n_in_one_class/6)
+                self.list_IDs += silence_labels * int(self.n_in_one_class/6)
                 IDs_not_unknown = [ID for ID in self.list_IDs if not unknown_labels.__contains__(ID)]
                 IDs_unknown = [ID for ID in self.list_IDs if unknown_labels.__contains__(ID)]
                 assert len(self.list_IDs) == len(IDs_not_unknown) + len(IDs_unknown)
