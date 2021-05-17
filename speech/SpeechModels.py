@@ -154,8 +154,10 @@ def AttRNNSpeechModel(nCategories, samplingrate=16000,
 
     x = L.Conv2D(10, (5, 1), activation='relu', padding='same')(x)
     x = L.BatchNormalization()(x)
+    x = L.Dropout(0.2)(x)
     x = L.Conv2D(1, (5, 1), activation='relu', padding='same')(x)
     x = L.BatchNormalization()(x)
+    x = L.Dropout(0.2)(x)
 
     # x = Reshape((125, 80)) (x)
     # keras.backend.squeeze(x, axis)
@@ -163,8 +165,10 @@ def AttRNNSpeechModel(nCategories, samplingrate=16000,
 
     x = L.Bidirectional(rnn_func(64, return_sequences=True)
                         )(x)  # [b_s, seq_len, vec_dim]
+    x = L.Dropout(0.2)(x)
     x = L.Bidirectional(rnn_func(64, return_sequences=True)
                         )(x)  # [b_s, seq_len, vec_dim]
+    x = L.Dropout(0.2)(x)
 
     xFirst = L.Lambda(lambda q: q[:, -1])(x)  # [b_s, vec_dim]
     query = L.Dense(128)(xFirst)
@@ -177,7 +181,9 @@ def AttRNNSpeechModel(nCategories, samplingrate=16000,
     attVector = L.Dot(axes=[1, 1])([attScores, x])  # [b_s, vec_dim]
 
     x = L.Dense(64, activation='relu')(attVector)
+    x = L.Dropout(0.2)(x)
     x = L.Dense(32)(x)
+    x = L.Dropout(0.2)(x)
 
     output = L.Dense(nCategories, activation='softmax', name='output')(x)
 
