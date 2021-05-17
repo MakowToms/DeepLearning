@@ -193,7 +193,7 @@ def AttRNNSpeechModel(nCategories, samplingrate=16000,
 
 
 def ConvAttRNNSpeechModel(nCategories, samplingrate=16000, inputLength=16000, rnn_func=L.LSTM,
-                          bigger_blocks=False, blocks_layers=[20, 40, 80, 160, 320]):
+                          bigger_blocks=False, more_blocks=False, blocks_layers=[20, 40, 80, 160, 320]):
     # simple LSTM
     sr = samplingrate
     iLen = inputLength
@@ -231,8 +231,19 @@ def ConvAttRNNSpeechModel(nCategories, samplingrate=16000, inputLength=16000, rn
         c2 = L.BatchNormalization()(c2)
     p2 = L.MaxPooling2D((2, 2))(c2)
     p2 = L.Dropout(0.3)(p2)
+    
+    block_channels = blocks_layers[2]
+    if more_blocks:
+        block_channels = blocks_layers[3]
+        c2 = L.Conv2D(blocks_layers[2], (3, 3), activation='relu', padding='same')(p2)
+        c2 = L.BatchNormalization()(c2)
+        if bigger_blocks:
+            c2 = L.Conv2D(blocks_layers[2], (3, 3), activation='relu', padding='same')(c2)
+            c2 = L.BatchNormalization()(c2)
+        p2 = L.MaxPooling2D((2, 2))(c2)
+        p2 = L.Dropout(0.3)(p2)
 
-    c3 = L.Conv2D(blocks_layers[2], (3, 3), activation='relu', padding='same')(p2)
+    c3 = L.Conv2D(block_channels, (3, 3), activation='relu', padding='same')(p2)
     c3 = L.BatchNormalization()(c3)
     c3 = L.Conv2D(1, (5, 1), activation='relu', padding='same')(c3)
 
