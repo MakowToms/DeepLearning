@@ -193,7 +193,7 @@ def AttRNNSpeechModel(nCategories, samplingrate=16000,
 
 
 def ConvAttRNNSpeechModel(nCategories, samplingrate=16000, inputLength=16000, rnn_func=L.LSTM,
-                          more_blocks=False, bigger_blocks=False, blocks_layers=[20, 40, 80, 160, 320]):
+                          bigger_blocks=False, blocks_layers=[20, 40, 80, 160, 320]):
     # simple LSTM
     sr = samplingrate
     iLen = inputLength
@@ -234,22 +234,9 @@ def ConvAttRNNSpeechModel(nCategories, samplingrate=16000, inputLength=16000, rn
 
     c3 = L.Conv2D(blocks_layers[2], (3, 3), activation='relu', padding='same')(p2)
     c3 = L.BatchNormalization()(c3)
-    if bigger_blocks:
-        c3 = L.Conv2D(blocks_layers[2], (3, 3), activation='relu', padding='same')(c3)
-        c3 = L.BatchNormalization()(c3)
-    p3 = L.MaxPooling2D((2, 2))(c3)
-#     p3 = L.Dropout(0.3)(p3)
+    c3 = L.Conv2D(1, (5, 1), activation='relu', padding='same')(c3)
 
-    if more_blocks:
-        p3 = L.Dropout(0.3)(p3)
-        c3 = L.Conv2D(blocks_layers[3], (3, 3), activation='relu', padding='same')(p3)
-        c3 = L.BatchNormalization()(c3)
-        if bigger_blocks:
-            c3 = L.Conv2D(blocks_layers[3], (3, 3), activation='relu', padding='same')(c3)
-            c3 = L.BatchNormalization()(c3)
-        p3 = L.MaxPooling2D((2, 2))(c3)
-
-    x = L.Flatten()(p3)
+    x = L.Lambda(lambda q: K.squeeze(q, -1), name='squeeze_last_dim')(c3)
 
 #     x = L.Conv2D(10, (5, 1), activation='relu', padding='same')(x)
 #     x = L.BatchNormalization()(x)
