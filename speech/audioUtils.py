@@ -68,7 +68,7 @@ def butter_highpass(data, cutoff, fs, order=5):
    return y
 
 
-def WAV2Numpy(folder, sr=None, top_db=30, cutoff=1000):
+def WAV2Numpy(folder, sr=None, top_db=30, cutoff=300):
     """
     Recursively converts WAV to numpy arrays.
     Deletes the WAV files in the process
@@ -83,7 +83,7 @@ def WAV2Numpy(folder, sr=None, top_db=30, cutoff=1000):
     for file in tqdm(allFiles):
         y, sr = librosa.load(file, sr=None)
         y = butter_highpass(y, cutoff, sr, order=5)
-        y = librosa.effects.trim(y, top_db)
+        y, _ = librosa.effects.trim(y, top_db)
 
         # if we want to write the file later
         # librosa.output.write_wav('file.wav', y, sr, norm=False)
